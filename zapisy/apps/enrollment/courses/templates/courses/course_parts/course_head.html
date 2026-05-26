@@ -122,9 +122,8 @@
             {% endif %}
         </div>
     {% elif discharge_allowed %}
-        <form action="{% url 'discharges:request' %}" method="post" class="d-inline">
+        <form action="{% url 'course-discharge' course.slug %}" method="post" class="d-inline">
             {% csrf_token %}
-            <input type="hidden" name="course_id" value="{{ course.pk }}"/>
             <button type="submit" class="btn btn-warning btn-sm"
                     onclick="return confirm('Czy na pewno chcesz złożyć wniosek o wypis dyrektorski z tego przedmiotu? Wniosek wymaga zatwierdzenia przez administratora.');">
                 Złóż wniosek o wypis dyrektorski

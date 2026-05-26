@@ -3,20 +3,23 @@ import json
 import locale
 from typing import Dict, Iterable, List, Optional, Tuple, TypedDict
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Min
-from django.http import Http404, HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.http import Http404, HttpRequest, HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.views.decorators.http import require_POST
 
 from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.group import Group, GuaranteedSpots
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.enrollment.utils import mailto
+from apps.enrollment.courses.models.course_instance import DischargePolicy
 from apps.enrollment.discharges.models import DirectorDischarge, DischargeStatus
-from apps.users.decorators import employee_required
+from apps.users.decorators import employee_required, student_required
 from apps.users.models import Student, is_external_contractor
 
 locale.setlocale(locale.LC_ALL, "pl_PL.UTF-8")
@@ -136,6 +139,37 @@ def course_view(request, slug):
         raise Http404
     data.update(prepare_courses_list_data(course.semester))
     return render(request, 'courses/courses.html', data)
+
+
+@student_required
+@require_POST
+def discharge(request: HttpRequest, slug: str) -> HttpResponse:
+    """Submits a director discharge request for a course identified by slug."""
+    course = get_object_or_404(CourseInstance.objects.select_related('semester'), slug=slug)
+    student = request.user.student
+
+    allowed, msg = DirectorDischarge.can_request(student, course)
+    if not allowed:
+        messages.error(request, msg)
+        return redirect('course-page', slug=slug)
+
+    new_discharge = DirectorDischarge.objects.create(
+        student=student,
+        course=course,
+        status=DischargeStatus.PENDING,
+    )
+
+    if course.director_discharge_policy == DischargePolicy.ACCEPT:
+        new_discharge.approve(None)
+        messages.success(request, f'Zostałeś wypisany z przedmiotu „{course.name}".')
+    else:
+        messages.success(
+            request,
+            f'Wniosek o wypis dyrektorski z przedmiotu „{course.name}" '
+            'został złożony i oczekuje na decyzję administratora.',
+        )
+
+    return redirect('course-page', slug=slug)
 
 
 def get_group_data(group_ids: List[int], user: User, status: RecordStatus) -> Dict[int, GroupData]:

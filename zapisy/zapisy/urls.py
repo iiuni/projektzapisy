@@ -12,7 +12,6 @@ urlpatterns = [
     path('api/v1/', include(api_router_v1.urls)),
     path('courses/', include('apps.enrollment.courses.urls')),
     path('records/', include('apps.enrollment.records.urls')),
-    path('discharges/', include(('apps.enrollment.discharges.urls', 'discharges'), namespace='discharges')),
     path('timetable/', include('apps.enrollment.timetable.urls')),
     path('grade/', include('apps.grade.urls')),
     path('news/', include('apps.news.urls')),
