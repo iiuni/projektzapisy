@@ -13,7 +13,7 @@ from apps.enrollment.records.models import GroupOpeningTimes, Record, RecordStat
 from apps.effects.models import CompletedCourses
 from apps.enrollment.timetable.views import build_group_list
 from apps.grade.ticket_create.models.student_graded import StudentGraded
-from apps.enrollment.discharges.models import DirectorDischarge, DischargeStatus
+from apps.enrollment.discharges.models import DirectorDischarge
 from apps.notifications.views import create_form
 from apps.users.decorators import employee_required, external_contractor_forbidden
 
