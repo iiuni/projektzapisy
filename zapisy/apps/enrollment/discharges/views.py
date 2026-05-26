@@ -6,6 +6,7 @@ from django.shortcuts import redirect
 from django.views.decorators.http import require_POST
 
 from apps.enrollment.courses.models import CourseInstance
+from apps.enrollment.courses.models.course_instance import DischargePolicy
 from apps.users.decorators import student_required
 
 from .models import DirectorDischarge, DischargeStatus
@@ -26,12 +27,21 @@ def request_discharge(request: HttpRequest) -> HttpResponse:
     allowed, msg = DirectorDischarge.can_request(student, course)
     if not allowed:
         messages.error(request, msg)
-    else:
-        DirectorDischarge.objects.create(
-            student=student,
-            course=course,
-            status=DischargeStatus.PENDING,
+        return redirect('course-page', slug=course.slug)
+
+    discharge = DirectorDischarge.objects.create(
+        student=student,
+        course=course,
+        status=DischargeStatus.PENDING,
+    )
+
+    if course.director_discharge_policy == DischargePolicy.ACCEPT:
+        discharge.approve(None)
+        messages.success(
+            request,
+            f'Zostałeś wypisany z przedmiotu „{course.name}".'
         )
+    else:
         messages.success(
             request,
             f'Wniosek o wypis dyrektorski z przedmiotu „{course.name}" '

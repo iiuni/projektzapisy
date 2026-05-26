@@ -138,8 +138,13 @@ class DirectorDischarge(models.Model):
             - student hasn't exceeded their total discharge_limit
             - student hasn't already used a discharge in this semester (max 1 per semester)
         """
+        from apps.enrollment.courses.models.course_instance import DischargePolicy
+
         if time is None:
             time = datetime.now()
+
+        if course.director_discharge_policy == DischargePolicy.REJECT:
+            return False, 'Wypisy dyrektorskie z tego przedmiotu są niedozwolone.'
 
         if student is None or not student.is_active:
             return False, 'Konto studenta jest nieaktywne.'
@@ -186,7 +191,7 @@ class DirectorDischarge(models.Model):
 
         return True, ''
 
-    def approve(self, admin_user: User) -> None:
+    def approve(self, admin_user: User | None) -> None:
         """Approves the discharge request.
 
         Removes the student from all enrolled/queued groups of the course,

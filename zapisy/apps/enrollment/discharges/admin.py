@@ -8,7 +8,7 @@ from .models import DirectorDischarge, DischargeStatus
 @admin.register(DirectorDischarge)
 class DirectorDischargeAdmin(admin.ModelAdmin):
     list_display = (
-        'student', 'course', 'get_semester', 'status', 'created', 'decided_by', 'decided_at',
+        'student', 'course', 'get_semester', 'status', 'created', 'get_decided_by', 'decided_at',
     )
     list_filter = ('status', 'course__semester')
     search_fields = (
@@ -17,7 +17,7 @@ class DirectorDischargeAdmin(admin.ModelAdmin):
         'student__matricula',
         'course__name',
     )
-    readonly_fields = ('created', 'modified', 'decided_by', 'decided_at', 'status')
+    readonly_fields = ('created', 'modified', 'get_decided_by', 'decided_at', 'status')
     raw_id_fields = ('student', 'course')
 
     fieldsets = [
@@ -25,7 +25,7 @@ class DirectorDischargeAdmin(admin.ModelAdmin):
             'fields': ['student', 'course', 'status'],
         }),
         ('Decyzja administratora', {
-            'fields': ['admin_comment', 'decided_by', 'decided_at'],
+            'fields': ['admin_comment', 'get_decided_by', 'decided_at'],
         }),
         ('Daty', {
             'fields': ['created', 'modified'],
@@ -38,6 +38,12 @@ class DirectorDischargeAdmin(admin.ModelAdmin):
         return obj.course.semester
     get_semester.short_description = 'Semestr'
     get_semester.admin_order_field = 'course__semester'
+
+    def get_decided_by(self, obj):
+        if obj.decided_by is None and obj.status in (DischargeStatus.APPROVED, DischargeStatus.REJECTED):
+            return 'Automatycznie'
+        return obj.decided_by or '—'
+    get_decided_by.short_description = 'Zatwierdził/Odrzucił'
 
     def approve_selected(self, request, queryset):
         """Approves selected PENDING discharge requests."""

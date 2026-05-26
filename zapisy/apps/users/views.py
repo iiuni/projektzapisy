@@ -202,16 +202,15 @@ def my_profile(request):
         done_effects = CompletedCourses.get_completed_effects(student)
 
         discharge_used = DirectorDischarge.get_used_total(student)
-        active_discharges = DirectorDischarge.objects.filter(
+        all_discharges = DirectorDischarge.objects.filter(
             student=student,
-            status__in=[DischargeStatus.PENDING, DischargeStatus.APPROVED],
         ).select_related('course', 'course__semester')
 
         data.update({
             'effects': done_effects,
             'discharge_used': discharge_used,
             'discharge_limit': student.discharge_limit,
-            'active_discharges': active_discharges,
+            'all_discharges': all_discharges,
         })
         groups_opening_times = GroupOpeningTimes.objects.filter(
             student_id=student.pk, group__course__semester_id=semester.pk).select_related(
