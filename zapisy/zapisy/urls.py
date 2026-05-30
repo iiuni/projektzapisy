@@ -9,6 +9,7 @@ admin.autodiscover()
 
 urlpatterns = [
     path('', apps.news.views.main_page, name='main-page'),
+    path('dostepnosc/', apps.news.views.accessibility_page, name='accessibility'),
     path('api/v1/', include(api_router_v1.urls)),
     path('courses/', include('apps.enrollment.courses.urls')),
     path('records/', include('apps.enrollment.records.urls')),
