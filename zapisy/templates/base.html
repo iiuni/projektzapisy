@@ -215,16 +215,30 @@
     {% block rendered_bundles %}
     {% endblock %}
     <footer class="d-print-none">
-        <div class="container-fluid bg-light">
+        <div class="container-fluid bg-light py-3">
             <div class="container">
-                <p>
-                    &copy; {% now "Y" %} <a href="http://www.ii.uni.wroc.pl/">Instytut Informatyki UWr</a>
-                    {% if user.is_authenticated %} | Nieprawidłowe dane należy zgłaszać na adres
-                    <a href="mailto:zapisy@cs.uni.wroc.pl">zapisy@cs.uni.wroc.pl</a>
-                    {% endif %}
-                    | Błędy i uwagi: <a href="https://github.com/iiuni/projektzapisy/issues">[link]</a>
-                    Wygenerowano: {% now "H:i:s" %}
-                </p>
+                <div class="row">
+                    <div class="col-lg-4 col-12 mb-3 mb-lg-0">
+                        <strong><a href="https://ii.uni.wroc.pl/">Instytut Informatyki Uniwersytetu Wrocławskiego</a></strong><br>
+                        ul. Fryderyka Joliot-Curie 15, 50-383 Wrocław<br>
+                        Tel.: <a href="tel:+48713757800">+48 71 375 78 00</a><br>
+                        E-mail: <a href="mailto:sekretariat@cs.uni.wroc.pl">sekretariat@cs.uni.wroc.pl</a><br>
+                        <a href="https://ii.uni.wroc.pl/instytut/dyrekcja">Władze Instytutu</a>
+                    </div>
+                    <div class="col-lg-4 col-12 mb-3 mb-lg-0">
+                        <strong>Informacje prawne</strong><br>
+                        <a href="https://uwr.edu.pl/polityka-prywatnosci/" target="_blank" rel="noopener">Polityka prywatności</a><br>
+                        <a href="https://uwr.edu.pl/regulamin-dotyczacy-www/" target="_blank" rel="noopener">Regulamin strony</a><br>
+                        <a href="https://bip.uni.wroc.pl/" target="_blank" rel="noopener">BIP Uniwersytetu Wrocławskiego</a><br>
+                        <a href="{% url 'accessibility' %}">Deklaracja dostępności</a>
+                    </div>
+                    <div class="col-lg-4 col-12">
+                        <strong>Serwis</strong><br>
+                        {% if user.is_authenticated %}Nieprawidłowe dane: <a href="mailto:zapisy@cs.uni.wroc.pl">zapisy@cs.uni.wroc.pl</a><br>{% endif %}
+                        Błędy i uwagi: <a href="https://github.com/iiuni/projektzapisy/issues">GitHub</a><br>
+                        <span class="text-muted">&copy; {% now "Y" %} Instytut Informatyki UWr</span>
+                    </div>
+                </div>
             </div>
         </div>
     </footer>
