@@ -1,13 +1,10 @@
 from django.contrib import admin, messages
-from django.contrib.admin import SimpleListFilter
 
 from apps.enrollment.courses.models.classroom import Classroom
-from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.course_type import Type
-from apps.enrollment.courses.models.effects import Effects
 from apps.enrollment.courses.models.group import Group, GuaranteedSpots
 from apps.enrollment.courses.models.semester import ChangedDay, Freeday, Semester
-from apps.enrollment.courses.models.tag import Tag
+from apps.enrollment.courses.models.tags import SpecialistTag, ThematicTag
 from apps.enrollment.courses.models.term import Term
 from apps.enrollment.records.models import GroupOpeningTimes, Record, RecordStatus, T0Times
 
@@ -72,26 +69,6 @@ class SemesterAdmin(admin.ModelAdmin):
 class FreedayAdmin(admin.ModelAdmin):
     # todo: add filter with academic_year with newer django
     ordering = ('-day',)
-
-
-class EffectsListFilter(SimpleListFilter):
-    title = 'Grupa efektów kształcenia'
-
-    # Parameter for the filter that will be used in the URL query.
-    parameter_name = 'effects'
-
-    def lookups(self, request, model_admin):
-        result = []
-        for effect in Effects.objects.all():
-            result.append((str(effect.id), effect))
-
-        return result
-
-    def queryset(self, request, queryset):
-        if self.value():
-            return queryset.filter(effects=self.value())
-        else:
-            return queryset
 
 
 class TermInline(admin.TabularInline):
@@ -172,29 +149,14 @@ class GroupAdmin(admin.ModelAdmin):
                                  'course__semester').prefetch_related('term', 'record_set')
 
 
-@admin.register(CourseInstance)
-class CourseInstanceAdmin(admin.ModelAdmin):
-    list_filter = ('semester', 'course_type', ('owner', admin.RelatedOnlyFieldListFilter),
-                   'tags', 'effects',)
-    list_display = ('name', 'owner', 'course_type', 'semester',)
-    search_fields = ('name', 'name_en')
-    ordering = ('semester', 'owner', 'offer')
-
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        return qs.select_related('owner', 'semester', 'offer')
-
-    inlines = [GroupInline, ]
-
-
 class TypeAdmin(admin.ModelAdmin):
     list_display = ('name', 'group', 'meta_type')
     list_filter = ('group', 'meta_type')
 
 
 admin.site.register(Group, GroupAdmin)
-admin.site.register(Tag)
-admin.site.register(Effects)
+admin.site.register(ThematicTag)
+admin.site.register(SpecialistTag)
 admin.site.register(Classroom, ClassroomAdmin)
 admin.site.register(Semester, SemesterAdmin)
 admin.site.register(Freeday, FreedayAdmin)

@@ -59,22 +59,22 @@
             <th scope="row">Egzamin</th>
             <td>{{ course.has_exam|yesno|capfirst }}</td>
         </tr>
-        {% if course.tags.all %}
+        {% if course.thematic_tags.all %}
         <tr>
-            <th scope="row">Tagi</th>
+            <th scope="row">Tagi tematyczne (I st.)</th>
             <td>
-                {% for tag in course.tags.all %}
+                {% for tag in course.thematic_tags.all %}
                     <span class="badge bg-success me-2">{{ tag }}</span>
                 {% endfor %}
             </td>
         </tr>
         {% endif %}
-        {% if course.effects.all %}
+        {% if course.specialist_tags.all %}
         <tr>
-            <th>Grupy efektów kształcenia</th>
+            <th>Tagi specjalistyczne (II st.)</th>
             <td>
-                {% for effect in course.effects.all %}
-                    <span class="badge bg-info me-2">{{ effect }}</span>
+                {% for tag in course.specialist_tags.all %}
+                    <span class="badge bg-success me-2">{{ tag }}</span>
                 {% endfor %}
             </td>
         </tr>

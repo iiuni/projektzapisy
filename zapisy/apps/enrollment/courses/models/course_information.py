@@ -13,8 +13,7 @@ from django.template.defaultfilters import slugify
 from apps.users.models import Employee
 
 from .course_type import Type as CourseType
-from .effects import Effects
-from .tag import Tag
+from .tags import SpecialistTag, ThematicTag
 
 
 class Language(models.TextChoices):
@@ -72,8 +71,8 @@ class CourseInformation(models.Model):
     year = models.CharField("rok studiów", max_length=50, blank=True)
     discipline = models.CharField("dyscyplina", max_length=100, default="Informatyka")
 
-    tags = models.ManyToManyField(Tag, verbose_name="tagi", blank=True)
-    effects = models.ManyToManyField(Effects, verbose_name="grupy efektów kształcenia", blank=True)
+    thematic_tags = models.ManyToManyField(ThematicTag, verbose_name="Tagi tematyczne (I st.)", blank=True)
+    specialist_tags = models.ManyToManyField(SpecialistTag, verbose_name="Tagi specjalistyczne (II st.)", blank=True)
 
     created = models.DateTimeField("Data utworzenia", auto_now_add=True)
     modified = models.DateTimeField("Data modyfikacji", auto_now=True)
@@ -113,15 +112,15 @@ class CourseInformation(models.Model):
         return copy
 
     def __json__(self):
-        """Returns a JSON-serializable dict with al course information."""
+        """Returns a JSON-serializable dict with all course information."""
         return {
             'id': self.id,
             'name': self.name,
             'courseType': self.course_type_id,
             'recommendedForFirstYear': self.recommended_for_first_year,
             'owner': self.owner_id,
-            'effects': [effect.pk for effect in self.effects.all()],
-            'tags': [tag.pk for tag in self.tags.all()],
+            'thematic_tags': [tag.pk for tag in self.thematic_tags.all()],
+            'specialist_tags': [tag.pk for tag in self.specialist_tags.all()],
         }
 
     def get_short_name(self):
@@ -130,14 +129,14 @@ class CourseInformation(models.Model):
     @staticmethod
     def prepare_filter_data(qs: models.QuerySet) -> Dict:
         """Prepares the data for course filter based on a given queryset."""
-        all_effects = Effects.objects.all().values_list('id', 'group_name', named=True)
-        all_tags = Tag.objects.all().values_list('id', 'full_name', named=True)
+        all_thematic_tags = ThematicTag.objects.all().values_list('id', 'full_name', named=True)
+        all_specialist_tags = SpecialistTag.objects.all().values_list('id', 'full_name', named=True)
         all_owners = qs.values_list(
             'owner', 'owner__user__first_name', 'owner__user__last_name', named=True).distinct()
         all_types = qs.values_list('course_type', 'course_type__name', named=True).distinct()
         return {
-            'allEffects': {e.id: e.group_name for e in all_effects},
-            'allTags': {t.id: t.full_name for t in all_tags},
+            'allThematicTags': {t.id: t.full_name for t in all_thematic_tags},
+            'allSpecialistTags': {t.id: t.full_name for t in all_specialist_tags},
             'allOwners': {
                 o.owner: [o.owner__user__first_name, o.owner__user__last_name] for o in all_owners
             },
