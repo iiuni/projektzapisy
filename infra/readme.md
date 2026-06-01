@@ -1,160 +1,130 @@
-# System Zapisów Deployment
+# Stawianie Systemu Zapisów
 
-This manual will allow you to configure the remote machine with the Ubuntu
-system and deploy System Zapisów on it.
+W tej sekcji opiszemy jak można skonfigurować maszynę REMOTE z systemem Ubuntu i postawić na niej System Zapisów.
 
-## Setting up the machine
+## Przygotowywanie maszyny
 
-Every admin has his own account with no-password sudo privileges on the remote
-machine. For security, the admin has to use public-key authentication to log in
-to the server.
+Każdy admin ma swoje własne konto z uprawnieniami sudo bez hasła na maszynie REMOTE. Ze względów bezpieczeństwa, administratorzy muszą korzystać z weryfikacji kluczem publicznym przy logowaniu do serwera.
 
-### Change sudo configuration on the remote machine
+### Zmiana konfiguracji sudo na maszynie REMOTE
 
-1. Log in into remote machine with `ssh`
+1. Zaloguj się do maszyny REMOTE używając `ssh`
 
-**For the first time:**
+**Pierwsze logowanie:**
 
-2. Open _sudoers_ file with `sudo visudo` command
-3. Add following line to the end of the file:
+2. Otwórz plik _sudoers_ używając komendy `sudo visudo`
+3. Dodaj poniższą linijkę na koniec pliku: 
    ```
    %adm ALL=(ALL:ALL) NOPASSWD: ALL
    ```
-4. Save changes
+4. Zapisz zmiany
 
-**For every new user:**
+**Dla każdego nowego użytkownika:**
 
-5. Add the user to the `adm` group:
+5. Dodaj użytkownika do grupy `adm`:
    ```
    sudo usermod -a -G adm username
    ```
-   where `username` is the username on the remote machine
-6. Log out
+   gdzie `username` to nazwa użytkownika na maszynie REMOTE
+6. Wyloguj się
 
-### Prepare ssh connection
+### Przygotuj połączenie ssh
 
-You should only connect to the remote machines using SSH keys (as opposed to passwords).
+Powinieneś łączyć się z maszynami REMOTE tylko i wyłącznie używając kluczy SSH (nigdy hasłem).
 
-1. If you don't have a _private_key_file_, you must generate it with the
-   `ssh-keygen` command (on your own computer).
-2. Copy your public key into the remote machine with `ssh-copy-id user@host`
-   where `user` is your username and `host` is the hostname of the remote machine.
+1. Jeśli nie masz pliku klucza prywatnego (_private_key_file_), musisz wygenerować go na swoim komputerze poleceniem `ssh-keygen`
+2. Przekopiuj swój klucz publiczny do maszyny REMOTE poleceniem `ssh-copy-id user@host`, gdzie `user` to twoja nazwa użytkownika a `host` to nazwa hosta maszyny REMOTE.
 
-## Defining an Inventory
+## Definiowanie Inwentarza (Inventory)
 
-Ansible is a tool that performs a defined set of actions (composed into
-_playbooks_) on remote machines defined in an _inventory_. We use two inventory
-files: one for the [_staging_](hosts/staging) server, one for the
-[_production_](hosts/staging). If you want to connect to one of them, perform
-the following steps:
+Ansible to narzędzie, które wykonuje odgórnie zdefiniowane sekwencje(zbiory?) akcji (zebrane w _playbooki_) na maszynach REMOTE zdefiniowanych w pewnym _inwentarzu_.
+My używamy dwóch plików inwentarza: jednego dla serwera ze [_staging_](hosts/staging), drugiego dla [_production_](hosts/staging). 
+Poniżej jest opisane, jak można połączyć się z którymś z nich.
 
-1. Edit _hostfile_ (an inventory file like `production` or `staging`) in _hosts_
-   directory. Add the path to your ssh _private_key_file_.
-2. If necessary, change other variables with your data.
-   **Glossary**:
-   - `ansible_user` — username on remote machine
-   - `ansible_host` — ip or public hostname of remote machine
-   - `ansible_port` — ssh port
-   - `deploy_user` — special user which will be created for our development
-   - `deploy_version` — name of branch from **projektzapisy** repository
-   - `deploy_server_name` — domain pointing to the remote machine
-3. Make sure that all the variables in
-   [`hosts/group_vars/all`](hosts/group_vars/all) have desired values. Some
-   variables are stored in our repository encrypted. If you wish to make use of
-   them, make sure, you have the password ([see more](#encrypted-variables)).
+1. Zmodyfikuj plik _hostfile_ (plik inwentarza taki jak `production` lub `staging`) w katalogu _hosts_. Dodaj tą ścieżkę do swojego pliku ssh _private_key_file_.
+2. Jeśli okaże się to konieczne, podmień inne zmienne na swoje dane.
+   **Słowniczek**:
+   - `ansible_user` — nazwa użytkownika na maszynie REMOTE
+   - `ansible_host` — adres ip lub publiczna nazwa hosta maszyny REMOTE
+   - `ansible_port` — port ssh
+   - `deploy_user` — specjalny użytkownik który zostanie utworzony na nasze potrzeby
+   - `deploy_version` — nazwa brancha z repozytorium **projektzapisy**
+   - `deploy_server_name` — domena wskazująca na maszynę REMOTE
+3. Upewnij się, że wszystkie zmienne w [`hosts/group_vars/all`](hosts/group_vars/all) mają poprawne wartości. Niektóre zmienne są przechowywane w naszym repozytorium po zaszyfrowaniu. Jeśli chcesz ich użyć, upewnij się, że masz hasło. ([zobacz więcej](#zaszyfrowane-zmienne)).
 
-### Configure the remote machine
+### Konfiguracja maszyny REMOTE
 
-In this step you will install and configure all the necessary packages on your
-remote machine. This can also be used when your configuration should be updated.
-Run this command in _infra_ directory:
+W tym kroku zainstalujemy i skonfigurujemy wszystkie potrzebne paczki na twojej maszynie REMOTE. Możesz wykonać ten krok również przy potrzebie aktualizacji konfiguracji. W katalogu _infra_ użyj polecenia:
 
 ```
 ansible-playbook playbooks/configure.yml -i hosts/hostfile
 ```
 
-### Update configuration with your own OpenSSL certificates
+### Aktualizacja konfiguracji własnymi certyfikatami OpenSSL 
 
-After running the `configure.yml` playbook, self-signed OpenSSL certificates
-has been created on the remote machine. To replace these files with your
-certificates:
+Po odpaleniu playbooka `configure.yml` na maszynie REMOTE zostaną utworzone samo-podpisane certyfikaty(?) OpenSSL. Żeby zastąpić te pliki swoimi certyfikatami:
 
-1. Place your OpenSSL private key in the _playbooks/ssl_ folder and rename it as
-   `zapisy.key`.
-2. Place your OpenSSL certificate file in the _playbooks/ssl_ folder and rename
-   it as `zapisy.crt`.
-3. Run this command:
-   ```
-   ansible-playbook playbooks/update_ssl.yml -i hosts/hostfile
-   ```
+1. Umieść swój prywatny klucz OpenSSL w katalogu _playbooks/ssl_ i zmień jego nazwę na `zapisy.key`
+2. Umieść swój plik certyfikatu OpenSSL w katalogu _playbooks/ssl_ i zmień jego nazwę na `zapisy.crt`.
+3. Odpal komendę:
+
+```
+ansible-playbook playbooks/update_ssl.yml -i hosts/hostfile
+```
 
 ## Deployment
 
-Deployment is an action of sending and running a new version of the application
-(System Zapisy in our case) on the remote machine. Deployment can be started
-automatically e.g by GitHub Actions. To start deployment by hand, run this
-command in _infra_ directory:
+Deployment to proces przesyłania i uruchamiania nowej wersji aplikacji (u nas Systemu Zapisy) na maszynie REMOTE. 
+Deployment może zostać rozpoczęty automatycznie, np. poprzez Github Actions. Żeby ręcznie rozpocząć deployment, w katalogu _infra_ wykonaj komendę:
 
 ```
 ansible-playbook playbooks/deploy.yml -i hosts/hostfile
 ```
 
-## Restore database
+## Przywrócenie bazy danych
 
-To restore the database, put the dump file into the `dump.7z` archive in _playbooks_ directory and run this command:
+Żeby przywrócić bazę danych, wrzuć plik zrzutu do archiwum `dump.7z` w katalogu _playbooks_ i wykonaj komendę:
 
 ```
 ansible-playbook playbooks/restore_db.yml -i hosts/hostfile
 ```
 
-## Other Notes
+## Dodatkowe informacje
 
-### Debugging
+### Debugowanie
 
-To display additional information during configuration, deployment, or restoring
-database add the flag `-vvv` to ansible-playbook commands and set environment
-variable `ANSIBLE_STDOUT_CALLBACK=debug` for more readable output.
+Żeby wyświetlić dodatkowe informacje w czasie konfiguracji, deploymentu lub przywracania bazy danych, dodaj flagę `-vvv` do poleceń ansible-playbook i ustaw zmienną środowiskową `ANSIBLE_STDOUT_CALLBACK=debug` dla lepszej czytelności.
 
-Logs are stored in the _logs_ folder in every deployment release. All releases
-can be found in `/home/deploy_user/deploy/releases` directory on the remote
-machine, where `deploy_user` is the value defined in the inventory file.
+Logi(Historia?) są przechowywane w folderze _logs_ w każdej wersji(?) deploymentu.
+Wszystkie wersje znajdziesz w folderze `/home/deploy_user/deploy/releases` na  maszynie REMOTE, gdzie `deploy_user` jest wartością zdefiniowaną w pliku inwentarza.
 
-Other useful commands to use on the remote machine:
+Inne przydatne komendy do użycia na maszynie REMOTE:
 
-- `journalctl -xe` — shows the latest logs from all services.
-- `journalctl -u example.service -fe` — shows and follows the latest logs from
-  example service.
-- `systemctl status example.service` — shows the status of example service.
+- `journalctl -xe` — pokazuje najnowsze logi ze wszystkich usług(?)
+- `journalctl -u example.service -fe` — pokazuje i śledzi najnowsze logi z usługi example-service
+- `systemctl status example.service` — pokazuje status usługi example-service.
 
-### Encrypted variables
+UWAGA:
+`hosts/example` służy do uruchamiania Systemu Zapisów na próbę, bez potrzeby uwierzytelniania; (?)
 
-System Zapisy uses some number of external services which all require some form
-of authentication. The necessary credentials for this authentication are listed
-in [`hosts/group_vars/all`](hosts/group_vars/all) but are (obviously) not stored
-there.
+### Zaszyfrowane zmienne
 
-Instead we store them password-encrypted (using [_Ansible
-Vault_](https://docs.ansible.com/ansible/latest/user_guide/vault.html)) in file
-[`hosts/group_vars/vault`](hosts/group_vars/vault). All hosts in `vault` group
-(which applies to both _staging_ and _production_—but not _example_) will
-override placeholders from `hosts/group_vars/all` with these encrypted values
-(so using them will require the password; [use `--ask-vault-pass` or
-`--vault-password-file` when running
-playbooks](https://docs.ansible.com/ansible/latest/user_guide/vault.html#using-encrypted-variables-and-files)).
+System Zapisy używa kilka zewnętrznych usług, z których wszystkie wymagają jakiejś formy uwierzytelniania. Potrzebne dane są wymienione w [`hosts/group_vars/all`](hosts/group_vars/all), ale z oczywistych powodów nie są tam przechowywane.
 
-## Example
+Zamiast tego, przechowujemy je po szyfrowaniu z hasłem (przy użyciu [_AnsibleVault_](https://docs.ansible.com/ansible/latest/user_guide/vault.html)) w pliku [`hosts/group_vars/vault`](hosts/group_vars/vault). 
+Wszyscy hostowie w grupie `vault` (co dotyczy zarówno _staging_ i _production_ ale nie _example_) nadpiszą placeholdery z `hosts/group_vars/all` tymi zaszyfrowanymi wartościami (więc użycie ich będzie wymagało hasła; [użyj `--ask-vault-pass` lub `--vault-password-file` przy odpalaniu playbooków](https://docs.ansible.com/ansible/latest/user_guide/vault.html#using-encrypted-variables-and-files)).
 
-To test deployment locally (using a virtual machine) follow the instructions
-below.
+## Przykład
 
-1. Install VirtualBox, Vagrant, and Ansible.
-2. In `infra/hosts`, run `vagrant up`.
-3. In `infra`, run the following:
+Żeby przetestować deployment lokalnie (używając maszyny wirtualnej), należy zastosować poniższe instrukcje.
+
+1. Zainstaluj VirtualBox, Vagrant, oraz Ansible.
+2. W katalogu `infra/hosts` wykonaj `vagrant up`.
+3. W katalogu `infra`, wykonaj poniższe polecenia:
    ```bash
    ansible-playbook playbooks/configure.yml -i hosts/example
    ansible-playbook playbooks/deploy.yml -i hosts/example
-   # for the following, first place the database dump file at `playbooks/dump.7z`
+   # przed resztą poleceń najpierw umieść plik zrzutu bazy danych w `playbooks/dump.7z`
    ansible-playbook playbooks/restore_db.yml -i hosts/example
    ```
-4. Check the [192.168.33.10](http://192.168.33.10/) address in your web
-   browser.
+4. Sprawdź adres [192.168.33.10](http://192.168.33.10/) w swojej przeglądarce
