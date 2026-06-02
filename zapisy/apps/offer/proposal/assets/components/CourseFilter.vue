@@ -31,7 +31,7 @@ export default Vue.extend({
       allTypes: [] as MultiselectFilterData<number>,
       // The filters are going to be collapsed by default.
       collapsed: true,
-      hasInactiveOwner: false,
+      containsInactiveOwner: false,
     };
   },
   created: function () {
@@ -40,7 +40,7 @@ export default Vue.extend({
     ) as FilterDataJSON;
     this.allEffects = cloneDeep(filtersData.allEffects);
     this.allTags = cloneDeep(filtersData.allTags);
-    this.hasInactiveOwner = Object.values(filtersData.allOwners).some(
+    this.containsInactiveOwner = Object.values(filtersData.allOwners).some(
       ([firstname, lastname, isActive]: any) => isActive === false
     );
     this.allOwners = toPairs(filtersData.allOwners)
@@ -56,10 +56,10 @@ export default Vue.extend({
         }
       )
       .map(([id, [firstname, lastname, isActive]]) => {
-        const inactivityInfo = isActive === false ? " (konto nieaktywne)" : "";
+        const inactivityLabel = isActive === false ? " (konto nieaktywne)" : "";
         return {
           value: Number(id),
-          label: `${firstname} ${lastname}${inactivityInfo}`,
+          label: `${firstname} ${lastname}${inactivityLabel}`,
         };
       });
     this.allTypes = Object.keys(filtersData.allTypes).map(
@@ -169,7 +169,7 @@ export default Vue.extend({
             ref="freshmen-filter"
           />
           <CheckFilter
-            v-if="hasInactiveOwner"
+            v-if="containsInactiveOwner"
             filterKey="hide-inactive-filter"
             property="isOwnerActive"
             label="Ukryj propozycje należące do kont nieaktywnych"

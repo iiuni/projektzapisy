@@ -38,7 +38,7 @@ def offer(request, slug=None):
             'status': ProposalStatus(p.status)._name_,
             'semester': p.semester,
             'url': reverse('offer-page', args=(p.slug,)),
-            'isOwnerActive': p.owner.user.is_active if p.owner else False,
+            'isOwnerActive': p.owner.user.is_active
         })
         proposal_list.append(proposal_dict)
     filter_data = Proposal.prepare_filter_data(qs, include_owner_activity=True)
