@@ -135,7 +135,7 @@ W pliku [`playbooks/deploy.yml`](playbooks/deploy.yml) jedna z naszych playbooko
    deploy_version=master
    ```
    
-Możesz zmodyfikować tą zmienną ręcznie - pamiętaj jednak, że taki playbook dosięgnie jedynie branche które zostały już spushowane na GitHubie - więc jeśli `git push` nie zostało wykonane na swoich lokalnych zmianach, nie będą one widoczne w deploymencie maszyny zdalnej.
+Możesz zmodyfikować tą zmienną ręcznie - pamiętaj jednak, że taki playbook dosięgnie jedynie branche które zostały już spushowane na GitHubie - więc jeśli `git push` nie zostało wykonane na twoich lokalnych zmianach, nie będą one widoczne w deploymencie maszyny zdalnej.
 
 
 ## Przykład
