@@ -38,7 +38,7 @@ Powinieneś łączyć się z maszynami zdalnymi tylko i wyłącznie używając 
 ## Definiowanie Inwentarza
 
 Ansible to narzędzie, które wykonuje odgórnie zdefiniowane akcje (zebrane w _playbooki_) na maszynach zdalnych. Akcje te definiowane są w pewnym _inwentarzu_.
-My używamy dwóch plików inwentarza: jednego dla serwera ze [_staging_](hosts/staging), drugiego dla [_production_](hosts/staging). 
+My używamy dwóch plików inwentarza: jednego dla serwera ze [_staging_](hosts/staging), drugiego dla [_production_](hosts/production). 
 Poniżej jest opisane, jak można połączyć się z jednym z nich.
 
 1. Zmodyfikuj plik _hostfile_ (plik inwentarza taki jak `production` lub `staging`) w katalogu _hosts_. Dodaj tą ścieżkę do swojego pliku ssh _private_key_file_.
