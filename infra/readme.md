@@ -37,7 +37,7 @@ Powinieneś łączyć się z maszynami zdalnymi tylko i wyłącznie używając 
 
 ## Definiowanie Inwentarza
 
-Ansible to narzędzie, które wykonuje odgórnie zdefiniowane akcje (zebrane w _playbooki_) na maszynach zdalnych. Akcje te definiowan są w pewnym _inwentarzu_.
+Ansible to narzędzie, które wykonuje odgórnie zdefiniowane akcje (zebrane w _playbooki_) na maszynach zdalnych. Akcje te definiowane są w pewnym _inwentarzu_.
 My używamy dwóch plików inwentarza: jednego dla serwera ze [_staging_](hosts/staging), drugiego dla [_production_](hosts/staging). 
 Poniżej jest opisane, jak można połączyć się z jednym z nich.
 
@@ -107,12 +107,36 @@ Inne przydatne komendy do użycia na maszynie zdalnej:
 UWAGA:
 `hosts/example` służy do uruchamiania Systemu Zapisów na próbę, bez potrzeby uwierzytelniania;
 
-### Zaszyfrowane zmienne
+### Zaszyfrowane zmienndeploy_version=master-deve
 
 System Zapisy używa kilka zewnętrznych usług, z których wszystkie wymagają jakiejś formy uwierzytelniania. Potrzebne dane są wymienione w [`hosts/group_vars/all`](hosts/group_vars/all), ale z oczywistych powodów nie są tam przechowywane.
 
 Zamiast tego, przechowujemy je po szyfrowaniu z hasłem (przy użyciu [_AnsibleVault_](https://docs.ansible.com/ansible/latest/user_guide/vault.html)) w pliku [`hosts/group_vars/vault`](hosts/group_vars/vault). 
 Wszyscy hostowie w grupie `vault` (co dotyczy zarówno _staging_ i _production_, ale nie _example_) nadpiszą placeholdery z `hosts/group_vars/all` tymi zaszyfrowanymi wartościami (więc użycie ich będzie wymagało hasła; [użyj `--ask-vault-pass` lub `--vault-password-file` przy odpalaniu playbooków](https://docs.ansible.com/ansible/latest/user_guide/vault.html#using-encrypted-variables-and-files)).
+
+### Deployowanie konretnego _brancha_ na maszynie zdalnej
+
+Jeśli chcesz na deploymencie korzystać z konkretnego brancha z GitHuba (chociażby własnego), oto kilka słów:
+
+W pliku [_playbooks/deploy.yml_]() jedna z naszych playbookowych akcji to:
+   ```
+   - name: Clone the project to the new release folder
+      become: yes
+      become_user: "{{ deploy_user }}"
+      git:
+        repo: 'https://github.com/iiuni/projektzapisy.git'
+        dest: "{{ deploy_helper.new_release_path }}"
+        version: "{{ deploy_version }}"
+   ```
+   
+'deploy_version' jest zdefiniowane w katalogu 'hosts', i np. dla _production_ jest to domyślnie
+
+   ```
+   deploy_version=master
+   ```
+   
+Możesz zmodyfikować tą zmienną ręcznie - pamiętaj jednak, że taki playbook dosięgnie jedynie branche które zostały już spushowane na GitHubie - więc jeśli 'git push' nie zostało wykonane na swoich lokalnych zmianach, nie będą one widoczne w deploymencie maszyny zdalnej.
+
 
 ## Przykład
 
