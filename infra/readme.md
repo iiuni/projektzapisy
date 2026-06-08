@@ -1,8 +1,8 @@
-# Stawianie Systemu Zapisów
+# System Zapisów - Środowisko Stagingowo-Produkcyjne
 
 W tej sekcji opiszemy jak można skonfigurować maszynę zdalną z systemem Ubuntu i postawić na niej System Zapisów.
 
-## Przygotowywanie maszyny
+## Przygotowanie maszyny
 
 Każdy admin ma swoje własne konto z uprawnieniami sudo bez hasła na maszynie zdalnej. Ze względów bezpieczeństwa, administratorzy muszą korzystać z weryfikacji kluczem publicznym przy logowaniu do serwera.
 
@@ -62,11 +62,11 @@ ansible-playbook playbooks/configure.yml -i hosts/hostfile
 
 ### Aktualizacja konfiguracji własnymi certyfikatami OpenSSL 
 
-Po odpaleniu playbooka `configure.yml` na maszynie zdalnej zostaną utworzone samo-podpisane certyfikaty OpenSSL. Żeby zastąpić te pliki swoimi certyfikatami:
+Po wykonaniu playbooka `configure.yml` na maszynie zdalnej zostaną utworzone samo-podpisane certyfikaty OpenSSL. Żeby zastąpić te pliki swoimi certyfikatami:
 
 1. Umieść swój prywatny klucz OpenSSL w katalogu _playbooks/ssl_ i zmień jego nazwę na `zapisy.key`
 2. Umieść swój plik certyfikatu OpenSSL w katalogu _playbooks/ssl_ i zmień jego nazwę na `zapisy.crt`.
-3. Odpal komendę:
+3. Wykonaj komendę:
 
 ```
 ansible-playbook playbooks/update_ssl.yml -i hosts/hostfile
@@ -75,7 +75,7 @@ ansible-playbook playbooks/update_ssl.yml -i hosts/hostfile
 ## Deployment
 
 Deployment to proces przesyłania i uruchamiania nowej wersji aplikacji (u nas Systemu Zapisy) na maszynie zdalnej. 
-Deployment może zostać rozpoczęty automatycznie, np. poprzez Github Actions. Żeby ręcznie rozpocząć deployment, w katalogu _infra_ wykonaj komendę:
+Deployment może zostać rozpoczęty automatycznie, np. poprzez GitHub Actions. Żeby ręcznie rozpocząć deployment, w katalogu _infra_ wykonaj komendę:
 
 ```
 ansible-playbook playbooks/deploy.yml -i hosts/hostfile
@@ -112,7 +112,7 @@ UWAGA:
 System Zapisy używa kilka zewnętrznych usług, z których wszystkie wymagają jakiejś formy uwierzytelniania. Potrzebne dane są wymienione w [`hosts/group_vars/all`](hosts/group_vars/all), ale z oczywistych powodów nie są tam przechowywane.
 
 Zamiast tego, przechowujemy je po szyfrowaniu z hasłem (przy użyciu [_AnsibleVault_](https://docs.ansible.com/ansible/latest/user_guide/vault.html)) w pliku [`hosts/group_vars/vault`](hosts/group_vars/vault). 
-Wszyscy hostowie w grupie `vault` (co dotyczy zarówno _staging_ i _production_, ale nie _example_) nadpiszą placeholdery z `hosts/group_vars/all` tymi zaszyfrowanymi wartościami (więc użycie ich będzie wymagało hasła; [użyj `--ask-vault-pass` lub `--vault-password-file` przy odpalaniu playbooków](https://docs.ansible.com/ansible/latest/user_guide/vault.html#using-encrypted-variables-and-files)).
+Wszystkie hosty w grupie `vault` (co dotyczy zarówno _staging_ i _production_, ale nie _example_) nadpiszą placeholdery z `hosts/group_vars/all` tymi zaszyfrowanymi wartościami (więc użycie ich będzie wymagało hasła; [użyj `--ask-vault-pass` lub `--vault-password-file` przy odpalaniu playbooków](https://docs.ansible.com/ansible/latest/user_guide/vault.html#using-encrypted-variables-and-files)).
 
 ### Deployowanie konretnego _brancha_ na maszynie zdalnej
 
@@ -136,6 +136,8 @@ W pliku [`playbooks/deploy.yml`](playbooks/deploy.yml) jedna z naszych playbooko
    ```
    
 Możesz zmodyfikować tą zmienną ręcznie - pamiętaj jednak, że taki playbook dosięgnie jedynie branche które zostały już spushowane na GitHubie - więc jeśli `git push` nie zostało wykonane na twoich lokalnych zmianach, nie będą one widoczne w deploymencie maszyny zdalnej.
+
+Analogicznie możesz wywołać Ansible z opcją -e i przez nią przekazać deploy_version.
 
 
 ## Przykład
