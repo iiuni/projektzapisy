@@ -118,7 +118,7 @@ Wszyscy hostowie w grupie `vault` (co dotyczy zarówno _staging_ i _production_,
 
 Jeśli chcesz na deploymencie korzystać z konkretnego brancha z GitHuba (chociażby własnego), oto kilka słów:
 
-W pliku [_playbooks/deploy.yml_](playbooks/deploy.yml) jedna z naszych playbookowych akcji to:
+W pliku [`playbooks/deploy.yml`](playbooks/deploy.yml) jedna z naszych playbookowych akcji to:
    ```
    - name: Clone the project to the new release folder
       become: yes
