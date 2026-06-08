@@ -107,7 +107,7 @@ Inne przydatne komendy do użycia na maszynie zdalnej:
 UWAGA:
 `hosts/example` służy do uruchamiania Systemu Zapisów na próbę, bez potrzeby uwierzytelniania;
 
-### Zaszyfrowane zmienndeploy_version=master-deve
+### Zaszyfrowane zmienne
 
 System Zapisy używa kilka zewnętrznych usług, z których wszystkie wymagają jakiejś formy uwierzytelniania. Potrzebne dane są wymienione w [`hosts/group_vars/all`](hosts/group_vars/all), ale z oczywistych powodów nie są tam przechowywane.
 
