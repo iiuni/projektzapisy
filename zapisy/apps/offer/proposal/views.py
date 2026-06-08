@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from apps.users.decorators import employee_required
+from apps.users.models import is_employee
 
 from .forms import EditProposalForm
 from .models import Proposal, ProposalStatus
@@ -26,6 +27,10 @@ def offer(request, slug=None):
 
     filter_statuses = [ProposalStatus.IN_OFFER, ProposalStatus.IN_VOTE, ProposalStatus.WITHDRAWN]
     qs = Proposal.objects.filter(status__in=filter_statuses).order_by('name')
+
+    if not is_employee(request.user):
+        qs = qs.filter(owner__user__is_active=True)
+
     proposal_list = []
     for p in qs.prefetch_related('effects', 'tags'):
         proposal_dict = p.__json__()
@@ -33,9 +38,10 @@ def offer(request, slug=None):
             'status': ProposalStatus(p.status)._name_,
             'semester': p.semester,
             'url': reverse('offer-page', args=(p.slug,)),
+            'isOwnerActive': p.owner.user.is_active
         })
         proposal_list.append(proposal_dict)
-    filter_data = Proposal.prepare_filter_data(qs)
+    filter_data = Proposal.prepare_filter_data(qs, include_owner_activity=True)
 
     return render(request, 'proposal/offer.html', {
         "proposal": proposal,

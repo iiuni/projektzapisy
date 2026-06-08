@@ -31,6 +31,7 @@ export default Vue.extend({
       allTypes: [] as MultiselectFilterData<number>,
       // The filters are going to be collapsed by default.
       collapsed: true,
+      containsInactiveOwner: false,
     };
   },
   created: function () {
@@ -39,15 +40,27 @@ export default Vue.extend({
     ) as FilterDataJSON;
     this.allEffects = cloneDeep(filtersData.allEffects);
     this.allTags = cloneDeep(filtersData.allTags);
+    this.containsInactiveOwner = Object.values(filtersData.allOwners).some(
+      ([firstname, lastname, isActive]: any) => isActive === false
+    );
     this.allOwners = toPairs(filtersData.allOwners)
-      .sort(([id, [firstname, lastname]], [id2, [firstname2, lastname2]]) => {
-        const lastNamesComparison = lastname.localeCompare(lastname2, "pl");
-        return lastNamesComparison === 0
-          ? firstname.localeCompare(firstname2, "pl")
-          : lastNamesComparison;
-      })
-      .map(([id, [firstname, lastname]]) => {
-        return { value: Number(id), label: `${firstname} ${lastname}` };
+      .sort(
+        (
+          [id, [firstname, lastname, isActive]],
+          [id2, [firstname2, lastname2, isActive2]]
+        ) => {
+          const lastNamesComparison = lastname.localeCompare(lastname2, "pl");
+          return lastNamesComparison === 0
+            ? firstname.localeCompare(firstname2, "pl")
+            : lastNamesComparison;
+        }
+      )
+      .map(([id, [firstname, lastname, isActive]]) => {
+        const inactivityLabel = isActive === false ? " (konto nieaktywne)" : "";
+        return {
+          value: Number(id),
+          label: `${firstname} ${lastname}${inactivityLabel}`,
+        };
       });
     this.allTypes = Object.keys(filtersData.allTypes).map(
       (typeKey: string) => ({
@@ -154,6 +167,13 @@ export default Vue.extend({
             property="recommendedForFirstYear"
             label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
             ref="freshmen-filter"
+          />
+          <CheckFilter
+            v-if="containsInactiveOwner"
+            filterKey="hide-inactive-filter"
+            property="isOwnerActive"
+            label="Ukryj propozycje należące do kont nieaktywnych"
+            ref="hide-inactive-filter"
           />
           <hr />
           <button
