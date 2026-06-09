@@ -1,6 +1,6 @@
 # System Zapisów - Środowisko Stagingowo-Produkcyjne
 
-W tej sekcji opiszemy jak można skonfigurować maszynę zdalną z systemem Ubuntu i postawić na niej System Zapisów.
+W tej sekcji opiszemy jak można skonfigurować maszynę zdalną z systemem Ubuntu i uruchomić na niej System Zapisów.
 
 ## Przygotowanie maszyny
 
@@ -26,7 +26,7 @@ Każdy admin ma swoje własne konto z uprawnieniami sudo bez hasła na maszynie 
    sudo usermod -a -G adm username
    ```
    gdzie `username` to nazwa użytkownika na maszynie zdalnej
-6. Wyloguj się
+6. Po dodaniu wszystkich użytkowników możesz się wylogować.
 
 ### Przygotuj połączenie ssh
 
@@ -114,7 +114,7 @@ System Zapisy używa kilka zewnętrznych usług, z których wszystkie wymagają 
 Zamiast tego, przechowujemy je po szyfrowaniu z hasłem (przy użyciu [_AnsibleVault_](https://docs.ansible.com/ansible/latest/user_guide/vault.html)) w pliku [`hosts/group_vars/vault`](hosts/group_vars/vault). 
 Wszystkie hosty w grupie `vault` (co dotyczy zarówno _staging_ i _production_, ale nie _example_) nadpiszą placeholdery z `hosts/group_vars/all` tymi zaszyfrowanymi wartościami (więc użycie ich będzie wymagało hasła; [użyj `--ask-vault-pass` lub `--vault-password-file` przy odpalaniu playbooków](https://docs.ansible.com/ansible/latest/user_guide/vault.html#using-encrypted-variables-and-files)).
 
-### Deployowanie konretnego _brancha_ na maszynie zdalnej
+### Deployowanie konkretnego _brancha_ na maszynie zdalnej
 
 Jeśli chcesz na deploymencie korzystać z konkretnego brancha z GitHuba (chociażby własnego), oto kilka słów:
 
