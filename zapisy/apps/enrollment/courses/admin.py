@@ -143,8 +143,8 @@ class GroupAdmin(admin.ModelAdmin):
         'type',
         'limit',
         'get_terms_as_string')
-    class SemesterFilter(admin.RelatedFieldListFilter):
 
+    class SemesterFilter(admin.RelatedFieldListFilter):
         def expected_parameters(self):
             return ['all_semesters'] + super().expected_parameters()
 
