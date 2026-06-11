@@ -13,7 +13,9 @@ import {
   FilterDataJSON,
   MultiselectFilterData,
 } from "@/enrollment/timetable/assets/models";
+
 import { CourseInfo } from "@/enrollment/timetable/assets/store/courses";
+import { ProposalInfo } from "./CourseList.vue"
 
 export default Vue.extend({
   components: {
@@ -96,6 +98,9 @@ export default Vue.extend({
     firstYearRecommended: function (course: CourseInfo) {
       return course.recommendedForFirstYear == true;
     },
+    activeOwner: function (proposal: ProposalInfo) {
+      return proposal.isOwnerActive == true;
+    },
   },
 });
 </script>
@@ -175,7 +180,7 @@ export default Vue.extend({
           <CheckFilter
             v-if="containsInactiveOwner"
             filterKey="hide-inactive-filter"
-            property="isOwnerActive"
+            :predicate="activeOwner"
             label="Ukryj propozycje należące do kont nieaktywnych"
             ref="hide-inactive-filter"
           />
