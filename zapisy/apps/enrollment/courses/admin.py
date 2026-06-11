@@ -147,18 +147,20 @@ class GroupAdmin(admin.ModelAdmin):
         def expected_parameters(self):
             return ['all_semesters'] + super().expected_parameters()
         def queryset(self, request, queryset):
-            if 'all_semesters' in request.GET:
+            if 'all_semesters' in self.used_parameters:
                 del self.used_parameters['all_semesters']
             return super().queryset(request,queryset)
         def choices(self, changelist):
-            yield {
-                "selected": self.lookup_val is Semester.get_current_semester().id and not self.lookup_val_isnull,
-                "query_string": changelist.get_query_string(
-                    {self.lookup_kwarg: Semester.get_current_semester().id},
-                    remove=[self.lookup_kwarg_isnull]
-                ),
-                "display": ("Current")
-            }
+            current_semester = Semester.get_current_semester()
+            if current_semester is not None:
+                yield {
+                    "selected": self.lookup_val is current_semester.id and not self.lookup_val_isnull,
+                    "query_string": changelist.get_query_string(
+                        {self.lookup_kwarg: current_semester.id},
+                        remove=[self.lookup_kwarg_isnull]
+                    ),
+                    "display": ("Current")
+                }
             yield from super().choices(changelist)
 
     list_filter = ('type', ('course__semester',SemesterFilter), 'teacher')
@@ -176,8 +178,9 @@ class GroupAdmin(admin.ModelAdmin):
         if 'all_semesters' not in request.GET and 'course__semester__id__exact' not in request.GET:
             q = request.GET.copy()
             semester = Semester.get_current_semester()
-            q['course__semester__id__exact'] = semester.id
-            q['all_semesters'] = True
+            if semester:
+                q['course__semester__id__exact'] = semester.id
+            q['all_semesters'] = ''
             request.GET = q
             request.META['QUERY_STRING'] = request.GET.urlencode()
         return super(GroupAdmin, self).changelist_view(request, extra_context=extra_context)
