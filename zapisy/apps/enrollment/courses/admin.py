@@ -143,7 +143,15 @@ class GroupAdmin(admin.ModelAdmin):
         'type',
         'limit',
         'get_terms_as_string')
-    list_filter = ('type', 'course__semester', 'teacher')
+    class SemesterFilter(admin.RelatedFieldListFilter):
+        def expected_parameters(self):
+            return ['all_semesters'] + super().expected_parameters()
+        def queryset(self, request, queryset):
+            if 'all_semesters' in request.GET:
+                del self.used_parameters['all_semesters']
+            return super().queryset(request,queryset)
+
+    list_filter = ('type', ('course__semester',SemesterFilter), 'teacher')
     search_fields = (
         'teacher__user__first_name',
         'teacher__user__last_name',
@@ -155,12 +163,11 @@ class GroupAdmin(admin.ModelAdmin):
     raw_id_fields = ('course', 'teacher')
 
     def changelist_view(self, request, extra_context=None):
-
-        if 'course__semester__id__exact' not in request.GET:
-
+        if 'all_semesters' not in request.GET and 'course__semester__id__exact' not in request.GET:
             q = request.GET.copy()
             semester = Semester.get_current_semester()
             q['course__semester__id__exact'] = semester.id
+            q['all_semesters'] = True
             request.GET = q
             request.META['QUERY_STRING'] = request.GET.urlencode()
         return super(GroupAdmin, self).changelist_view(request, extra_context=extra_context)
