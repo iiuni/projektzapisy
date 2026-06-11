@@ -11,7 +11,6 @@
 // The function called to update the filters is the refreshFun function,
 // which is defined in `../point-counter.ts`.
 
-//The checkfilter here still remains to be tested.
 import { cloneDeep, toPairs } from "lodash";
 import Vue from "vue";
 
@@ -20,7 +19,7 @@ import { mapGetters } from "vuex";
 import TextFilter from "@/enrollment/timetable/assets/components/filters/TextFilter.vue";
 import LabelsFilter from "@/enrollment/timetable/assets/components/filters/LabelsFilter.vue";
 import MultiSelectFilter from "@/enrollment/timetable/assets/components/filters/MultiSelectFilter.vue";
-import CheckFilter from "@/theses/assets/components/filters/CheckFilter.vue";
+import CheckFilter from "@/enrollment/timetable/assets/components/filters/CheckFilter.vue";
 import {
   FilterDataJSON,
   MultiselectFilterData,
@@ -102,11 +101,7 @@ export default Vue.extend({
     });
   },
   methods: {
-<<<<<<< HEAD
     firstYearRecommended: function (course: CourseInfo) {
-=======
-    firstYearRecommended: function (course: any) {
->>>>>>> d62f7f81 (Issue 1812 : Linting)
       return course.recommendedForFirstYear == true;
     },
   },

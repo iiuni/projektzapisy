@@ -8,7 +8,7 @@ import { mapMutations } from "vuex";
 import TextFilter from "@/enrollment/timetable/assets/components/filters/TextFilter.vue";
 import LabelsFilter from "@/enrollment/timetable/assets/components/filters/LabelsFilter.vue";
 import MultiSelectFilter from "@/enrollment/timetable/assets/components/filters/MultiSelectFilter.vue";
-import CheckFilter from "@/theses/assets/components/filters/CheckFilter.vue";
+import CheckFilter from "@/enrollment/timetable/assets/components/filters/CheckFilter.vue";
 import {
   FilterDataJSON,
   MultiselectFilterData,

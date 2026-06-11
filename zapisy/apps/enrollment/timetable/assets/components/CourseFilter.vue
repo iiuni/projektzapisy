@@ -9,7 +9,7 @@ import { mapMutations } from "vuex";
 import TextFilter from "./filters/TextFilter.vue";
 import LabelsFilter from "./filters/LabelsFilter.vue";
 import MultiSelectFilter from "./filters/MultiSelectFilter.vue";
-import CheckFilter from "@/theses/assets/components/filters/CheckFilter.vue";
+import CheckFilter from "./filters/CheckFilter.vue";
 import { FilterDataJSON, MultiselectFilterData } from "./../models";
 import { CourseInfo } from "../store/courses";
 

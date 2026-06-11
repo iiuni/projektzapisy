@@ -1,32 +1,28 @@
 <script lang="ts">
-import { property } from "lodash";
-import Vue from "vue";
+import Vue, { PropType } from "vue";
 import { mapMutations } from "vuex";
 
 import { Filter } from "../../store/filters";
-//WARNING: This file became obsolete as of issue 1812. However, trying to remove it caused errors in tsconfig.json
-class BooleanFilter implements Filter {
-  constructor(public on: boolean, public propertyName: string) {}
 
-  visible(c: Object): boolean {
+class BooleanFilter implements Filter {
+  constructor(public on: boolean, public predicate: (c: any) => boolean) {}
+
+  visible(c: any): boolean {
     if (!this.on) {
       return true;
     }
-    let propGetter = property(this.propertyName) as (c: Object) => boolean;
-    let propValue = propGetter(c);
-    return propValue;
+    return this.predicate(c);
   }
 }
 
 // TextFilter applies the string filtering on a property of a course.
 export default Vue.extend({
   props: {
-    // Property of a course on which we are filtering.
-    property: String,
-    // Every filter needs a unique identifier.
-    filterKey: String,
-    label: String, //ref????
-  },
+      filterKey: String, //unique label
+      label: String, //display label
+      predicate: Function as PropType<(c: any) => boolean>, //boolean funct on an object - if true, element will be shown.
+      onByDefault: { type: Boolean, default: false },
+    },
   data: () => {
     return {
       on: false,
@@ -35,8 +31,8 @@ export default Vue.extend({
   created: function () {
     const searchParams = new URL(window.location.href).searchParams;
 
-    if (searchParams.has(this.property)) {
-      if (searchParams.get(this.property) === "true") {
+    if (searchParams.has(this.filterKey)) {
+      if (searchParams.get(this.filterKey) === "true") {
         this.on = true;
       }
     }
@@ -56,15 +52,15 @@ export default Vue.extend({
     on: function (newOn: boolean) {
       const url = new URL(window.location.href);
       if (newOn) {
-        url.searchParams.set(this.property, newOn.toString());
+        url.searchParams.set(this.filterKey, newOn.toString());
       } else {
-        url.searchParams.delete(this.property);
+        url.searchParams.delete(this.filterKey);
       }
       window.history.replaceState(null, "", url.toString());
 
       this.registerFilter({
         k: this.filterKey,
-        f: new BooleanFilter(newOn, this.property),
+        f: new BooleanFilter(newOn, this.predicate),
       });
     },
   },
