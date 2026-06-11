@@ -144,12 +144,15 @@ class GroupAdmin(admin.ModelAdmin):
         'limit',
         'get_terms_as_string')
     class SemesterFilter(admin.RelatedFieldListFilter):
+
         def expected_parameters(self):
             return ['all_semesters'] + super().expected_parameters()
+
         def queryset(self, request, queryset):
             if 'all_semesters' in self.used_parameters:
                 del self.used_parameters['all_semesters']
-            return super().queryset(request,queryset)
+            return super().queryset(request, queryset)
+
         def choices(self, changelist):
             current_semester = Semester.get_current_semester()
             if current_semester is not None:
@@ -163,7 +166,7 @@ class GroupAdmin(admin.ModelAdmin):
                 }
             yield from super().choices(changelist)
 
-    list_filter = ('type', ('course__semester',SemesterFilter), 'teacher')
+    list_filter = ('type', ('course__semester', SemesterFilter), 'teacher')
     search_fields = (
         'teacher__user__first_name',
         'teacher__user__last_name',
