@@ -19,8 +19,8 @@ export interface CourseInfo {
   groups: GroupInfo[];
   waiting_students: [{ name: string; number: string }];
   max_of_waiting_students: number;
-  totalWaiting: number;
-  totalGuaranteed: number;
+  total_waiting: number;
+  total_guaranteed: number;
   is_math: boolean;
   has_deficit: boolean;
   smallest_group: number;

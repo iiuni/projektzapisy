@@ -54,10 +54,10 @@ export default Vue.extend({
       }
     },
     guaranteedGTZ: function (course: CourseInfo) {
-      return course.totalGuaranteed > 0;
+      return course.total_guaranteed > 0;
     },
     waitingGTZ: function (course: CourseInfo) {
-      return course.totalWaiting > 0;
+      return course.total_waiting > 0;
     },
     hasGroupBelowTen: function (course: CourseInfo) {
       return course.smallest_group < 10;
