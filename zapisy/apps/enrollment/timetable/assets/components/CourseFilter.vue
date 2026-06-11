@@ -32,7 +32,7 @@ export default Vue.extend({
   },
   created: function () {
     const filtersData = JSON.parse(
-      document.getElementById("filters-data")!.innerHTML,
+      document.getElementById("filters-data")!.innerHTML
     ) as FilterDataJSON;
     this.allEffects = cloneDeep(filtersData.allEffects);
     this.allTags = cloneDeep(filtersData.allTags);
@@ -50,7 +50,7 @@ export default Vue.extend({
       (typeKey: string) => ({
         value: Number(typeKey),
         label: filtersData.allTypes[Number(typeKey)],
-      }),
+      })
     );
   },
   mounted: function () {
@@ -68,7 +68,6 @@ export default Vue.extend({
     ...mapMutations("filters", ["clearFilters"]),
     firstYearRecommended: function (course: CourseInfo) {
       return course.recommendedForFirstYear == true;
-
     },
   },
 });

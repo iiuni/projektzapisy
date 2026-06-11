@@ -18,11 +18,11 @@ class BooleanFilter implements Filter {
 // TextFilter applies the string filtering on a property of a course.
 export default Vue.extend({
   props: {
-      filterKey: String, //unique label
-      label: String, //display label
-      predicate: Function as PropType<(c: any) => boolean>, //boolean funct on an object - if true, element will be shown.
-      onByDefault: { type: Boolean, default: false },
-    },
+    filterKey: String, //unique label
+    label: String, //display label
+    predicate: Function as PropType<(c: any) => boolean>, //boolean funct on an object - if true, element will be shown.
+    onByDefault: { type: Boolean, default: false },
+  },
   data: () => {
     return {
       on: false,

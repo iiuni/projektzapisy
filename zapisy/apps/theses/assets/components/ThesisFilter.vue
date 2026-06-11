@@ -35,10 +35,9 @@ export default Vue.extend({
     isAvailable: function (thesis: ThesisInfo) {
       return thesis.is_available == true;
     },
-    isMine: function(thesis: ThesisInfo) {
+    isMine: function (thesis: ThesisInfo) {
       return thesis.is_mine == true;
-    }
-
+    },
   },
 });
 </script>
