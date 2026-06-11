@@ -150,6 +150,16 @@ class GroupAdmin(admin.ModelAdmin):
             if 'all_semesters' in request.GET:
                 del self.used_parameters['all_semesters']
             return super().queryset(request,queryset)
+        def choices(self, changelist):
+            yield {
+                "selected": self.lookup_val is Semester.get_current_semester().id and not self.lookup_val_isnull,
+                "query_string": changelist.get_query_string(
+                    {self.lookup_kwarg: Semester.get_current_semester().id},
+                    remove=[self.lookup_kwarg_isnull]
+                ),
+                "display": ("Current")
+            }
+            yield from super().choices(changelist)
 
     list_filter = ('type', ('course__semester',SemesterFilter), 'teacher')
     search_fields = (
