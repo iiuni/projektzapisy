@@ -124,10 +124,17 @@
     {% elif discharge_allowed %}
         <form action="{% url 'course-discharge' course.slug %}" method="post" class="d-inline">
             {% csrf_token %}
-            <button type="submit" class="btn btn-warning btn-sm"
-                    onclick="return confirm('Czy na pewno chcesz złożyć wniosek o wypis dyrektorski z tego przedmiotu? Wniosek wymaga zatwierdzenia przez administratora.');">
-                Złóż wniosek o wypis dyrektorski
-            </button>
+            {% if course.director_discharge_policy == 0 %}
+                <button type="submit" class="btn btn-warning btn-sm"
+                        onclick="return confirm('Czy na pewno chcesz wypisać się z tego przedmiotu? Operacja jest nieodwracalna.');">
+                    Wypisz się z przedmiotu
+                </button>
+            {% else %}
+                <button type="submit" class="btn btn-warning btn-sm"
+                        onclick="return confirm('Czy na pewno chcesz złożyć wniosek o wypis dyrektorski z tego przedmiotu? Wniosek wymaga zatwierdzenia przez administratora.');">
+                    Złóż wniosek o wypis dyrektorski
+                </button>
+            {% endif %}
         </form>
     {% endif %}
 </div>

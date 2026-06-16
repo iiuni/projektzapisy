@@ -3,7 +3,8 @@
 {{ content|safe }}
 
 Zespół zapisy.ii.uni.wroc.pl
-
+{% if show_unsubscribe %}
 ---
-Jeśli nie chcesz otrzymywać więcej powiadomień tego typu, zaktualizuj opcje 
+Jeśli nie chcesz otrzymywać więcej powiadomień tego typu, zaktualizuj opcje
 w swoim profilu (https://zapisy.ii.uni.wroc.pl{% url 'my-profile' %}).
+{% endif %}

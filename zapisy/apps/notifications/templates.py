@@ -13,6 +13,9 @@ class NotificationType(str, Enum):
     THESIS_VOTING_HAS_BEEN_ACTIVATED = 'thesis_voting_has_been_activated'
     EVENT_DECISION = 'event_decision'
     THESIS_HAS_BEEN_ACCEPTED = 'thesis_has_been_accepted'
+    DISCHARGE_APPROVED_STUDENT = 'discharge_approved_student'
+    DISCHARGE_REJECTED_STUDENT = 'discharge_rejected_student'
+    DISCHARGE_APPROVED_TEACHER = 'discharge_approved_teacher'
 
 
 mapping = {
@@ -42,6 +45,12 @@ mapping = {
     'W pracy dyplomowej "{title}" pojawiła się możliwość głosowania.',
     NotificationType.THESIS_HAS_BEEN_ACCEPTED:
     'Praca dyplomowa "{title}" została zaakceptowana przez komisję.',
+    NotificationType.DISCHARGE_APPROVED_STUDENT:
+    'Twój wniosek o wypis dyrektorski z przedmiotu „{course_name}" został zatwierdzony.',
+    NotificationType.DISCHARGE_REJECTED_STUDENT:
+    'Twój wniosek o wypis dyrektorski z przedmiotu „{course_name}" został odrzucony.',
+    NotificationType.DISCHARGE_APPROVED_TEACHER:
+    'Student {student_name} wypisał się z przedmiotu „{course_name}" w ramach wypisu dyrektorskiego.',
 }
 
 mapping_title = {
@@ -67,4 +76,10 @@ mapping_title = {
     'W pracy dyplomowej "{title}" pojawiła się możliwość głosowania',
     NotificationType.THESIS_HAS_BEEN_ACCEPTED:
     'Praca dyplomowa "{title}" została zaakceptowana',
+    NotificationType.DISCHARGE_APPROVED_STUDENT:
+    'Wypis dyrektorski z przedmiotu „{course_name}" został zatwierdzony',
+    NotificationType.DISCHARGE_REJECTED_STUDENT:
+    'Wypis dyrektorski z przedmiotu „{course_name}" został odrzucony',
+    NotificationType.DISCHARGE_APPROVED_TEACHER:
+    'Student {student_name} wypisał się z przedmiotu „{course_name}"',
 }

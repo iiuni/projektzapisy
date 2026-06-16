@@ -18,6 +18,8 @@ from django.db import models
 
 from apps.enrollment.records.models.records import Record, RecordStatus
 from apps.enrollment.records.signals import GROUP_CHANGE_SIGNAL
+from apps.notifications.custom_signals import discharge_approved as discharge_approved_signal
+from apps.notifications.custom_signals import discharge_rejected as discharge_rejected_signal
 
 if TYPE_CHECKING:
     from apps.enrollment.courses.models.course_instance import CourseInstance
@@ -224,6 +226,8 @@ class DirectorDischarge(models.Model):
         self.decided_at = datetime.now()
         self.save()
 
+        discharge_approved_signal.send(None, instance=self)
+
         LOGGER.info(
             'Director discharge approved: student=%s course=%s by=%s',
             self.student, self.course, admin_user,
@@ -248,6 +252,8 @@ class DirectorDischarge(models.Model):
         self.decided_at = datetime.now()
         self.admin_comment = comment
         self.save()
+
+        discharge_rejected_signal.send(None, instance=self)
 
         LOGGER.info(
             'Director discharge rejected: student=%s course=%s by=%s',
