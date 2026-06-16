@@ -8,17 +8,10 @@ from django_rq import job
 
 from apps.notifications.models import NotificationPreferencesStudent, NotificationPreferencesTeacher
 from apps.notifications.repositories import get_notifications_repository
-from apps.notifications.templates import NotificationType
 from apps.notifications.utils import render_description
 from apps.notifications.utils import render_title
 
 EMAIL_SUBJECT_TEMPLATE = "[ZAPISY] %s"
-
-MANDATORY_NOTIFICATION_TYPES = {
-    NotificationType.DISCHARGE_APPROVED_STUDENT,
-    NotificationType.DISCHARGE_REJECTED_STUDENT,
-    NotificationType.DISCHARGE_APPROVED_TEACHER,
-}
 
 
 @job('dispatch-notifications')
@@ -53,7 +46,6 @@ def dispatch_notifications_task(user):
             'content': render_description(
                 pn.description_id, pn.description_args),
             'greeting': f'Dzień dobry, {user.first_name}',
-            'show_unsubscribe': pn.description_id not in MANDATORY_NOTIFICATION_TYPES,
         }
 
         subject = EMAIL_SUBJECT_TEMPLATE % render_title(pn.description_id, pn.description_args)
