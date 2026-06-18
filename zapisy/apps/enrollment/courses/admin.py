@@ -144,7 +144,7 @@ class GroupAdmin(admin.ModelAdmin):
         'limit',
         'get_terms_as_string')
 
-    class SemesterFilter(admin.RelatedFieldListFilter):
+    class SemesterFilter(admin.RelatedOnlyFieldListFilter):
         def expected_parameters(self):
             return ['all_semesters'] + super().expected_parameters()
 
@@ -157,7 +157,7 @@ class GroupAdmin(admin.ModelAdmin):
             current_semester = Semester.get_current_semester()
             if current_semester is not None:
                 yield {
-                    "selected": self.lookup_val is current_semester.id and not self.lookup_val_isnull,
+                    "selected": self.lookup_val is not None and str(current_semester.id) in self.lookup_val,
                     "query_string": changelist.get_query_string(
                         {self.lookup_kwarg: current_semester.id},
                         remove=[self.lookup_kwarg_isnull]
