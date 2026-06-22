@@ -1,6 +1,5 @@
 "use strict";
 const path = require("path");
-const webpack = require("webpack");
 
 const PnpWebpackPlugin = require("pnp-webpack-plugin");
 
@@ -105,9 +104,6 @@ const PLUGINS = [
     path: path.resolve(STATS_DIR),
     filename: "webpack-stats.json",
   }),
-  new webpack.IgnorePlugin({
-    resourceRegExp: /mathjax-full/,
-  }),
 ].filter(Boolean);
 
 const WEBPACK_CONFIG = {
@@ -158,7 +154,6 @@ const WEBPACK_CONFIG = {
       // Skip part of minimization that takes the most time (compressing
       // whitespace).
       new TerserPlugin({
-        exclude: /poll-bokeh/,
         terserOptions: {
           ecma: 8,
           comments: false,
