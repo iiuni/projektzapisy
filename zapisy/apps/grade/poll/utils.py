@@ -170,7 +170,6 @@ class PollSummarizedResultsEntry:
 
             plot.hbar(y='choices', right='values', source=source, height=0.8)
             plot.x_range.start = 0
-            # plot.axis.minor_tick_line_color = None
             for axis in plot.axis:
                 axis.minor_tick_line_color = None
 
