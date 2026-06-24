@@ -37,6 +37,10 @@ const AssetDefs = {
     path.resolve("apps/enrollment/timetable/assets/prototype-legend.scss"),
   ],
 
+  // Poll app
+
+  // "poll-bokeh-plotting": [path.resolve("apps/grade/poll/assets/bokeh.js")],
+
   // Ticket_create app
 
   "ticket_create-katex": [
