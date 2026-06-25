@@ -4,18 +4,9 @@ import Component from "vue-class-component";
 import ClassroomPicker from "./ClassroomPicker.vue";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
+import type { Term } from "../terms.ts";
 
 dayjs.extend(duration);
-
-export type Term = {
-  id: number | null;
-  day: string;
-  start: string;
-  end: string;
-  roomId: number | null;
-  place: string;
-  deleted: boolean;
-};
 
 type EditableTermField = "day" | "start" | "end" | "place";
 type LocationTab = "inside" | "outside";
