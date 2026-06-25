@@ -366,8 +366,9 @@ export default class ReservationEditor extends Vue {
             <input
               type="text"
               readonly
-              disabled
               class="form-control form-place m-0"
+              :class="entry.index === activeTermIndex ? 'bg-light' : ''"
+              :disabled="entry.index !== activeTermIndex"
               :value="entry.term.place"
             />
           </div>
