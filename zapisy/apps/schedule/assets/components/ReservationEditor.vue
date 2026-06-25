@@ -4,7 +4,7 @@ import Component from "vue-class-component";
 import ClassroomPicker from "./ClassroomPicker.vue";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
-import type { Term } from "../terms.ts";
+import type { Term } from "../terms";
 
 dayjs.extend(duration);
 
@@ -13,7 +13,7 @@ type LocationTab = "inside" | "outside";
 
 function createEmptyTerm(): Term {
   const timeStampFrom = dayjs();
-  const timeStampTo = timeStampFrom.add(dayjs.duration({ minutes: 30 }));
+  const timeStampTo = timeStampFrom.add(dayjs.duration({ minutes: 5 }));
 
   // Pre-fill a short slot only when it stays within one calendar day; otherwise
   // leave the date/time empty and let the user choose a valid reservation window.
@@ -388,20 +388,12 @@ export default class ReservationEditor extends Vue {
               Usuń
             </button>
           </div>
-        </div>
-        <div v-if="getTermErrors(entry.term).length > 0" class="px-1 pb-2">
+
           <div
-            class="text-danger fw-medium lh-sm"
-            role="alert"
-            aria-live="polite"
+            v-if="getTermErrors(entry.term).length > 0"
+            class="col-12 small text-danger"
           >
-            <div
-              v-for="(error, eIdx) in getTermErrors(entry.term)"
-              :key="eIdx"
-              class="mb-1"
-            >
-              {{ error }}
-            </div>
+            {{ getTermErrors(entry.term).join(", ") }}
           </div>
         </div>
       </div>

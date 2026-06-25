@@ -1,6 +1,6 @@
 import Vue from "vue";
 import ReservationEditor from "./components/ReservationEditor.vue";
-import type { Term } from "./terms.ts";
+import type { Term } from "./terms";
 
 interface ReservationEditorData {
   terms: Term[];
