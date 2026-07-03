@@ -46,7 +46,7 @@ class SemesterAdmin(admin.ModelAdmin):
         ('Czas trwania zapisów', {
             'fields': [
                 'records_opening', 'records_ects_limit_abolition', 'records_ending',
-                'records_closing'
+                'records_closing', 'director_discharge_deadline',
             ]
         }),
     ]
@@ -176,7 +176,7 @@ class GroupAdmin(admin.ModelAdmin):
 class CourseInstanceAdmin(admin.ModelAdmin):
     list_filter = ('semester', 'course_type', ('owner', admin.RelatedOnlyFieldListFilter),
                    'tags', 'effects',)
-    list_display = ('name', 'owner', 'course_type', 'semester',)
+    list_display = ('name', 'owner', 'course_type', 'semester', 'director_discharge_policy',)
     search_fields = ('name', 'name_en')
     ordering = ('semester', 'owner', 'offer')
 
