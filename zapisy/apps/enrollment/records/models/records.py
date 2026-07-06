@@ -280,12 +280,12 @@ class Record(models.Model):
         Every entry will be a dict with fields 'num_enrolled' and
         'num_enqueued'.
         """
-        enrolled_agg = models.Count('id', filter=models.Q(status=RecordStatus.ENROLLED))
-        enqueued_agg = models.Count('id', filter=models.Q(status=RecordStatus.QUEUED))
-        records = cls.objects.filter(group__in=groups).exclude(
-            status=RecordStatus.REMOVED).values('group_id').annotate(
-                num_enrolled=enrolled_agg, num_enqueued=enqueued_agg).values(
-                    'group_id', 'num_enrolled', 'num_enqueued')
+        enrolled_agg = models.Count(
+            'student_id', distinct=True, filter=models.Q(status=RecordStatus.ENROLLED))
+        distinct_agg = models.Count('student_id', distinct=True)
+        records = cls.objects.filter(group__in=groups).exclude(status=RecordStatus.REMOVED).values(
+            'group_id').annotate(num_enrolled=enrolled_agg, num_distinct=distinct_agg).values(
+                'group_id', 'num_enrolled', 'num_distinct')
         ret_dict: Dict[int, Dict[str, int]] = {
             g.pk: {
                 'num_enrolled': 0,
@@ -295,7 +295,7 @@ class Record(models.Model):
         }
         for rec in records:
             ret_dict[rec['group_id']]['num_enrolled'] = rec['num_enrolled']
-            ret_dict[rec['group_id']]['num_enqueued'] = rec['num_enqueued']
+            ret_dict[rec['group_id']]['num_enqueued'] = rec['num_distinct'] - rec['num_enrolled']
         return ret_dict
 
     @classmethod
