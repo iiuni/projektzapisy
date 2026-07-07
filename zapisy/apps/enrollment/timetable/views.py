@@ -2,7 +2,7 @@
 import collections
 import csv
 import json
-from typing import List, Optional, Mapping, Any, Dict
+from typing import List, Optional, Any, Dict
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
@@ -11,7 +11,7 @@ from django.http import JsonResponse
 from django.shortcuts import Http404, HttpResponse, get_object_or_404, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
-from django.template import engines, Template
+from django.template import Template
 from django.template.loader import get_template
 
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
@@ -121,20 +121,18 @@ def employee_timetable_data(employee: Employee, semester: Optional[Semester]):
     return data
 
 
-def render_timetable_json(context: Mapping[str, Any], templates: Dict[str, Template]):
+def render_timetable_json(context: Dict[str, Any], templates: Dict[str, Template]) -> JsonResponse:
     """Renders timetable related HTML elements from django templates.
 
     Minimum context contents are 'groups_dicts' (as return value of build_group_list)
     and 'semester' (as Semester object or string of semester name).
     """
-    engine = engines['django']
-    base_templates: Mapping[str, Template]
-    base_templates = {
-        'timetable-data-div': engine.from_string('{{groups_dicts|json_script:"timetable-data"}}'),
-        'semester-dropdown-title': engine.from_string('<strong>Semestr {{ semester }}</strong>'),
+    timetable_elems: Dict[str, str]
+    timetable_elems = {
+        'timetable-data-div': '{{groups_dicts|json_script:"timetable-data"}}',
+        'semester-dropdown-title': '<strong>Semestr {{ semester }}</strong>',
     }
-    templates.update(base_templates)
-    return render_templates_json(context, templates)
+    return render_templates_json(context, templates, timetable_elems)
 
 
 @login_required
