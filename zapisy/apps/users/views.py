@@ -23,7 +23,8 @@ logger = logging.getLogger()
 
 @login_required
 @external_contractor_forbidden
-def students_view(request, user_id: Optional[int] = None, semester_id: Optional[int] = None, sem_fetch: bool = False):
+def students_view(request, user_id: Optional[int] = None, semester_id: Optional[int] = None,
+                  semester_data_only: bool = False):
     """View for students list and student profile if user id in URL is provided.
 
     By default, the student profile displays the timetable for the upcoming semester.
@@ -32,10 +33,10 @@ def students_view(request, user_id: Optional[int] = None, semester_id: Optional[
     displayed semester.
     """
     # Should never have happened
-    if user_id is None and sem_fetch:
+    if user_id is None and semester_data_only:
         raise Http404
 
-    if not sem_fetch:
+    if not semester_data_only:
         students_queryset = Student.get_active_students().select_related('user')
         if not request.user.employee:
             students_queryset = students_queryset.filter(consent__granted=True)
@@ -87,12 +88,12 @@ def students_view(request, user_id: Optional[int] = None, semester_id: Optional[
 
         group_dicts = build_group_list(groups)
 
-        if sem_fetch:
+        if semester_data_only:
             data.update({
                 'groups_dicts': group_dicts,
                 'semester': semester
             })
-            return render_timetable_json(data, [])
+            return render_timetable_json(data, {})
 
         data.update({
             'student': student,
@@ -103,7 +104,8 @@ def students_view(request, user_id: Optional[int] = None, semester_id: Optional[
     return render(request, 'users/users_view.html', data)
 
 
-def employees_view(request, user_id: Optional[int] = None, semester_id: Optional[int] = None, sem_fetch: bool = False):
+def employees_view(request, user_id: Optional[int] = None, semester_id: Optional[int] = None,
+                   semester_data_only: bool = False):
     """View for employees list and employee profile if user id in URL is provided.
 
     By default, the employee profile displays the timetable for the upcoming semester.
@@ -112,10 +114,10 @@ def employees_view(request, user_id: Optional[int] = None, semester_id: Optional
     displayed semester.
     """
     # Should never have happened
-    if user_id is None and sem_fetch:
+    if user_id is None and semester_data_only:
         raise Http404
 
-    if not sem_fetch:
+    if not semester_data_only:
         employees_queryset = Employee.get_actives().select_related('user')
         employees = {
             e.pk: {
@@ -158,12 +160,12 @@ def employees_view(request, user_id: Optional[int] = None, semester_id: Optional
 
         group_dicts = build_group_list(groups)
 
-        if sem_fetch:
+        if semester_data_only:
             data.update({
                 'groups_dicts': group_dicts,
                 'semester': semester
             })
-            return render_timetable_json(data, [])
+            return render_timetable_json(data, {})
 
         data.update({
             'employee': employee,

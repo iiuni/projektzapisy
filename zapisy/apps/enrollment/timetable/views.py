@@ -2,7 +2,7 @@
 import collections
 import csv
 import json
-from typing import List, Optional, Mapping, Tuple, Any
+from typing import List, Optional, Mapping, Any, Dict
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
@@ -21,6 +21,7 @@ from apps.enrollment.timetable.models import Pin
 from apps.schedule.models.term import Term as SchTerm
 from apps.users.decorators import student_required
 from apps.users.models import Employee, Student
+from apps.common.json_response import render_templates_json
 
 
 def build_group_list(groups: List[Group]):
@@ -120,26 +121,24 @@ def employee_timetable_data(employee: Employee, semester: Optional[Semester]):
     return data
 
 
-def render_timetable_json(context: Mapping[str, Any], other_templates: List[Tuple[str, Template]]):
+def render_timetable_json(context: Mapping[str, Any], templates: Dict[str, Template]):
     """Renders timetable related HTML elements from django templates.
 
     Minimum context contents are 'groups_dicts' (as return value of build_group_list)
     and 'semester' (as Semester object or string of semester name).
-    Additional elements are expected as pairs (HTML id, Template).
-    Returns JSON response with mappings HTML id: HTML-correct string.
     """
     engine = engines['django']
-    base_templates = [
-        ('timetable-data-div', engine.from_string('{{groups_dicts|json_script:"timetable-data"}}')),
-        ('semester-dropdown-title', engine.from_string('<strong>Semestr {{ semester }}</strong>')),
-    ]
-    base_templates.extend(other_templates)
-    response = {id: template.render(context) for id, template in base_templates}
-    return JsonResponse(response)
+    base_templates: Mapping[str, Template]
+    base_templates = {
+        'timetable-data-div': engine.from_string('{{groups_dicts|json_script:"timetable-data"}}'),
+        'semester-dropdown-title': engine.from_string('<strong>Semestr {{ semester }}</strong>'),
+    }
+    templates.update(base_templates)
+    return render_templates_json(context, templates)
 
 
 @login_required
-def my_timetable(request, semester_id: Optional[int] = None, sem_fetch: bool = False):
+def my_timetable(request, semester_id: Optional[int] = None, semester_data_only: bool = False):
     """Shows the student/employee his own timetable page.
 
     If sem_fetch is True sends only necessary data to switch displayed semester.
@@ -160,11 +159,11 @@ def my_timetable(request, semester_id: Optional[int] = None, sem_fetch: bool = F
     data['semester'] = semester
     data['all_semesters'] = all_semesters
 
-    if sem_fetch:
+    if semester_data_only:
         if request.user.student:
-            other_templates = [('courses-table', get_template('timetable/courses_table.html'))]
+            other_templates = {'courses-table': get_template('timetable/courses_table.html')}
         else:
-            other_templates = []
+            other_templates = {}
         return render_timetable_json(data, other_templates)
 
     return render(request, 'timetable/timetable.html', data)
