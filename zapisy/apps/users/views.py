@@ -36,27 +36,6 @@ def students_view(request, user_id: Optional[int] = None, semester_id: Optional[
     if user_id is None and semester_data_only:
         raise Http404
 
-    if not semester_data_only:
-        students_queryset = Student.get_active_students().select_related('user')
-        if not request.user.employee:
-            students_queryset = students_queryset.filter(consent__granted=True)
-        students = {
-            s.pk: {
-                'last_name': s.user.last_name,
-                'first_name': s.user.first_name,
-                'id': s.user.id,
-                'album': s.matricula,
-                'email': s.user.email
-            }
-            for s in students_queryset
-        }
-        data = {
-            'students': students,
-            'user_link': reverse('students-list'),
-        }
-    else:
-        data = {}
-
     if user_id is not None:
         try:
             student: Student = Student.objects.select_related('user', 'consent').get(user_id=user_id)
@@ -89,18 +68,38 @@ def students_view(request, user_id: Optional[int] = None, semester_id: Optional[
         group_dicts = build_group_list(groups)
 
         if semester_data_only:
-            data.update({
+            timetable_data = {
                 'groups_dicts': group_dicts,
                 'semester': semester
-            })
-            return render_timetable_json(data, {})
+            }
+            return render_timetable_json(timetable_data, {})
 
-        data.update({
+        data = {
             'student': student,
             'groups_dicts': group_dicts,
             'semester': semester,
             'all_semesters': Semester.objects.filter(visible=True)
-        })
+        }
+    else:
+        data = {}
+
+    students_queryset = Student.get_active_students().select_related('user')
+    if not request.user.employee:
+        students_queryset = students_queryset.filter(consent__granted=True)
+    students = {
+        s.pk: {
+            'last_name': s.user.last_name,
+            'first_name': s.user.first_name,
+            'id': s.user.id,
+            'album': s.matricula,
+            'email': s.user.email
+        }
+        for s in students_queryset
+    }
+    data.update({
+        'students': students,
+        'user_link': reverse('students-list'),
+    })
     return render(request, 'users/users_view.html', data)
 
 
@@ -116,25 +115,6 @@ def employees_view(request, user_id: Optional[int] = None, semester_id: Optional
     # Should never have happened
     if user_id is None and semester_data_only:
         raise Http404
-
-    if not semester_data_only:
-        employees_queryset = Employee.get_actives().select_related('user')
-        employees = {
-            e.pk: {
-                'last_name': e.user.last_name,
-                'first_name': e.user.first_name,
-                'id': e.user.id,
-                'email': e.user.email,
-            }
-            for e in employees_queryset
-        }
-        data = {
-            'employees': employees_queryset,
-            'employees_dict': employees,
-            'user_link': reverse('employees-list'),
-        }
-    else:
-        data = {}
 
     if user_id is not None:
         try:
@@ -161,18 +141,36 @@ def employees_view(request, user_id: Optional[int] = None, semester_id: Optional
         group_dicts = build_group_list(groups)
 
         if semester_data_only:
-            data.update({
+            timetable_data = {
                 'groups_dicts': group_dicts,
                 'semester': semester
-            })
-            return render_timetable_json(data, {})
+            }
+            return render_timetable_json(timetable_data, {})
 
-        data.update({
+        data = {
             'employee': employee,
             'groups_dicts': group_dicts,
             'semester': semester,
             'all_semesters': Semester.objects.filter(visible=True)
-        })
+        }
+    else:
+        data = {}
+
+    employees_queryset = Employee.get_actives().select_related('user')
+    employees = {
+        e.pk: {
+            'last_name': e.user.last_name,
+            'first_name': e.user.first_name,
+            'id': e.user.id,
+            'email': e.user.email,
+        }
+        for e in employees_queryset
+    }
+    data.update({
+        'employees': employees_queryset,
+        'employees_dict': employees,
+        'user_link': reverse('employees-list'),
+    })
     return render(request, 'users/users_view.html', data)
 
 
