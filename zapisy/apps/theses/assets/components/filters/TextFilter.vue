@@ -37,6 +37,13 @@ export default Vue.extend({
       pattern: "",
     };
   },
+  created() {
+    this.$store.subscribe((mutation) => {
+      if (mutation.type === "filters/clearFilters") {
+        this.pattern = "";
+      }
+    });
+  },
   methods: {
     ...mapMutations("filters", ["registerFilter"]),
   },

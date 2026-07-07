@@ -16,9 +16,14 @@ export interface GroupInfo {
 export interface CourseInfo {
   id: number;
   course_name: string;
-  groups: GroupInfo;
+  groups: GroupInfo[];
   waiting_students: [{ name: string; number: string }];
   max_of_waiting_students: number;
+  total_waiting: number;
+  total_guaranteed: number;
+  is_math: boolean;
+  has_deficit: boolean;
+  smallest_group: number;
 }
 
 interface State {
@@ -38,7 +43,7 @@ const actions = {
   initFromJSONTag({ commit }: ActionContext<State, any>) {
     const statisticsDump = JSON.parse(
       document.getElementById("statistics-data")!.innerHTML
-    ) as CourseInfo;
+    ) as CourseInfo[];
     commit("setCoursesList", statisticsDump);
   },
 };

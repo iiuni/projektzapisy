@@ -10,6 +10,7 @@
 //
 // The function called to update the filters is the refreshFun function,
 // which is defined in `../point-counter.ts`.
+
 import { cloneDeep, toPairs } from "lodash";
 import Vue from "vue";
 
@@ -23,6 +24,7 @@ import {
   FilterDataJSON,
   MultiselectFilterData,
 } from "@/enrollment/timetable/assets/models";
+import { CourseInfo } from "@/enrollment/timetable/assets/store/courses";
 
 export default Vue.extend({
   components: {
@@ -98,6 +100,11 @@ export default Vue.extend({
       }
     });
   },
+  methods: {
+    firstYearRecommended: function (course: CourseInfo) {
+      return course.recommendedForFirstYear == true;
+    },
+  },
 });
 </script>
 
@@ -161,8 +168,8 @@ export default Vue.extend({
           <hr />
           <CheckFilter
             filterKey="freshmen-filter"
-            property="recommendedForFirstYear"
             label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
+            :predicate="firstYearRecommended"
             ref="freshmen-filter"
           />
         </div>
