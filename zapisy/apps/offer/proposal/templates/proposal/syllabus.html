@@ -119,19 +119,8 @@
         <tr>
             <th class="number-cell" rowspan="2" scope="rowgroup">11.</th>
             <th>Forma zajęć i liczba godzin</th>
-            <td id="hours">
-                <style>
-                    #hours span + span::before {
-                        content: '+';
-                        margin: 0 .5em;
-                    }
-                </style>
-                {% if proposal.hours_lecture %}<span>{{ proposal.hours_lecture }} (wyk.)</span>{% endif %}
-                {% if proposal.hours_exercise %}<span>{{ proposal.hours_exercise }} (ćw.)</span>{% endif %}
-                {% if proposal.hours_lab %}<span>{{ proposal.hours_lab }} (prac.)</span>{% endif %}
-                {% if proposal.hours_exercise_lab %}<span>{{ proposal.hours_exercise_lab }} (ćw-prac.)</span>{% endif %}
-                {% if proposal.hours_seminar %}<span>{{ proposal.hours_seminar }} (sem.)</span>{% endif %}
-                {% if proposal.hours_recap %}<span>{{ proposal.hours_recap }} (rep.)</span>{% endif %}
+            <td class="hours-list">
+                {% include 'courses/course_parts/hours_list.html' with course=proposal %}
             </td>
         </tr>
         <tr>

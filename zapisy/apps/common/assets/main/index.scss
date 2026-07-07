@@ -299,3 +299,23 @@ div.loginbox {
 .background-gray {
   background-color: $gray-200;
 }
+
+.hours-list ul,
+.badges ul {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+  li {
+    float: left;
+  }
+  &::after {
+    content: "";
+    clear: both;
+    display: table;
+  }
+}
+
+.hours-list ul li + li::before {
+  content: "+";
+  margin: 0 0.5em;
+}

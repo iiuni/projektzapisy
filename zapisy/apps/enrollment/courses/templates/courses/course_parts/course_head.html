@@ -16,22 +16,6 @@
 </div>
 
 <table class="table table-bordered table-md-responsive table-infobox">
-    <style>
-        #hours ul, .badges ul {
-            padding: 0;
-            margin: 0;
-        }
-
-        #hours ul li {
-            list-style-type: none;
-            float: left;
-        }
-            
-        #hours ul li + li::before {
-            content: '+';
-            margin: 0 .5em;
-        }
-    </style>
     <colgroup>
         <col class="header-column"></col>
     </colgroup>
@@ -49,15 +33,8 @@
         </tr>
         <tr>
             <th scope="row">Liczba godzin</th>
-            <td id="hours">
-                <ul>
-                    {% if course.hours_lecture %}<li>{{ course.hours_lecture }} (wyk.)</li>{% endif %}
-                    {% if course.hours_exercise %}<li>{{ course.hours_exercise }} (ćw.)</li>{% endif %}
-                    {% if course.hours_lab %}<li>{{ course.hours_lab }} (prac.)</li>{% endif %}
-                    {% if course.hours_exercise_lab %}<li>{{ course.hours_exercise_lab }} (ćw-prac.)</li>{% endif %}
-                    {% if course.hours_seminar %}<li>{{ course.hours_seminar }} (sem.)</li>{% endif %}
-                    {% if course.hours_recap %}<li>{{ course.hours_recap }} (rep.)</li>{% endif %}
-                </ul>
+            <td class="hours-list">
+                {% include 'courses/course_parts/hours_list.html' with course=course %}
             </td>
         </tr>
         <tr>
