@@ -112,10 +112,9 @@ export default Vue.extend({
             :predicate="waitingGTZ"
           />
           <CheckFilter
-            filterKey="filter-no-math-subjects"
-            label="Ukryj przedmioty matematyczne"
-            :predicate="isNotMat"
-            :onByDefault="true"
+            filterKey="filter-has-more-waiting-than-free"
+            label="Ukryj przedmioty z nadmiarem wolnych miejsc"
+            :predicate="hasTypeWithDeficit"
           />
           <CheckFilter
             filterKey="filter-has-guaranteed-spots"
@@ -123,14 +122,15 @@ export default Vue.extend({
             :predicate="guaranteedGTZ"
           />
           <CheckFilter
-            filterKey="filter-has-more-waiting-than-free"
-            label="Ukryj przedmioty z większą liczbą wolnych miejsc niż liczbą oczekujących"
-            :predicate="hasTypeWithDeficit"
-          />
-          <CheckFilter
             filterKey="filter-has-group-below-ten"
             label="Pokaż jedynie przedmioty z przynajmniej jedną grupą poniżej 10 osób"
             :predicate="hasGroupBelowTen"
+          />
+          <CheckFilter
+            filterKey="filter-no-math-subjects"
+            label="Ukryj przedmioty matematyczne"
+            :predicate="isNotMat"
+            :onByDefault="true"
           />
         </div>
       </div>
