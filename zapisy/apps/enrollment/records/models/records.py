@@ -93,6 +93,14 @@ class Record(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['group_id', 'student_id'],
+                condition=models.Q(status=RecordStatus.ENROLLED) | models.Q(status=RecordStatus.QUEUED),
+                name='unique_enrolled_queued_record')
+        ]
+
     @staticmethod
     def can_enqueue(student: Optional[Student], group: Group, time: datetime = None) -> bool:
         """Checks if the student can join the queue of the group.
