@@ -103,9 +103,11 @@ export class Teacher {
 // Course is defined in apps/enrollment/courses/models/course.py.
 export class Course {
   constructor(
+    public id: number,
     public name: string,
     public shortName: string,
-    public url: string
+    public url: string,
+    public points: number
   ) {}
 }
 
