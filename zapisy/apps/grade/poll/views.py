@@ -12,7 +12,7 @@ from apps.enrollment.courses.models.semester import Semester
 from apps.grade.poll.forms import SubmissionEntryForm, TicketsEntryForm
 from apps.grade.poll.models import Poll, Submission
 from apps.grade.poll.utils import (PollSummarizedResults, SubmissionStats, check_grade_status,
-                                   group)
+                                   group_polls)
 from apps.grade.ticket_create.models.rsa_keys import RSAKeys
 
 
@@ -248,9 +248,8 @@ class PollResults(TemplateView):
                 self.template_name,
                 {
                     'is_grade_active': is_grade_active,
-                    'polls': group(entries=available_polls, sort=True),
+                    'polls': group_polls(available_polls),
                     'results': self.__get_processed_results(submissions),
-                    'results_iterator': itertools.count(),
                     'semesters': semesters,
                     'current_semester': current_semester,
                     'current_poll_id': poll_id,
