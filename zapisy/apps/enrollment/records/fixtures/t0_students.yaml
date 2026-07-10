@@ -1,0 +1,47 @@
+# First create the semester.
+- model: courses.Semester
+  pk: 1
+  fields:
+    year: 2011/12
+    type: z
+    records_opening: 2011-09-26T00:00:00+02:00
+    records_closing: 2011-10-09T23:59:59+02:00
+    records_ects_limit_abolition: 2011-10-02T23:59:00+02:00
+    semester_beginning: 2011-09-26T00:00:00+02:00
+    semester_ending: 2012-01-22T23:59:59+01:00
+
+# We will have two students.
+- model: users.Program
+  pk: 1
+  fields:
+    name: "Informatyka"
+    is_native: True
+
+- model: auth.User
+  pk: 1
+  fields:
+    username: bolek
+- model: users.Student
+  pk: 1
+  fields:
+    user_id: 1
+    matricula: 100001
+    program: 1
+    ects: 1
+
+- model: users.Program
+  pk: 2
+  fields:
+    name: "Dziennikarstwo"
+    is_native: False
+
+- model: auth.User
+  pk: 2
+  fields:
+    username: lola
+- model: users.Student
+  pk: 2
+  fields:
+    user_id: 2
+    matricula: 100002
+    program: 2
