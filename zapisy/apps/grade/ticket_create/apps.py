@@ -6,4 +6,4 @@ class TicketsAppConfig(AppConfig):
     verbose_name = "Tickets"
 
     def ready(self):
-        import apps.grade.ticket_create.signals  # noqa
+        import apps.grade.ticket_create.signals  # noqa: F401

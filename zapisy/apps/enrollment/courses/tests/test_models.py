@@ -4,7 +4,8 @@ from django.core.validators import ValidationError
 from django.test import TestCase
 
 from apps.common import days_of_week
-from apps.enrollment.courses.models.semester import ChangedDay, Freeday, Semester
+from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.specialdays import ChangedDay, Freeday
 from apps.enrollment.courses.tests.objectmothers import SemesterObjectMother
 from apps.offer.proposal.tests.factories import ProposalFactory
 
