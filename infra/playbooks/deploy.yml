@@ -98,6 +98,13 @@
         path: "{{ deploy_helper.new_release_path }}/venv/run/"
         state: directory
 
+    - name: Activate yarn
+      become: yes
+      become_user: "{{ deploy_user }}"
+      command: corepack prepare yarn@4.14.1 --activate
+      args:
+        chdir: "{{ deploy_helper.new_release_path }}/zapisy/"
+
     - name: Install dependencies based on package.json
       become: yes
       become_user: "{{ deploy_user }}"
@@ -131,6 +138,8 @@
         keep_releases: 2
 
     - name: Get revision
+      become: yes
+      become_user: "{{ deploy_user }}"
       shell: git rev-parse HEAD
       register: git_rev
       args:

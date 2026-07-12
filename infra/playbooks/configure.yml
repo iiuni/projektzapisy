@@ -5,6 +5,7 @@
     APP_DB_USER: fereol
     APP_DB_NAME: fereol
     ansible_python_interpreter: "/usr/bin/python3"
+    node_version: 18 # to be removed in the future (scroll down to "Install Node" tasks to learn why)
 
   tasks:
 
@@ -16,13 +17,35 @@
     - import_tasks: newrelic.yml
       become: yes
 
+    # the following 3 tasks are to be removed once we migrate to a newer Ubuntu version
+    # offering recent Node.js by default (not something like 10); this is a temporary workaround
+    - name: Install Node - step 1
+      get_url:
+        url: "https://deb.nodesource.com/setup_{{ node_version }}.x"
+        dest: /tmp/nodesource_setup.sh
+        mode: "0755"
+      become: yes
+
+    - name: Install Node - step 2
+      command: /tmp/nodesource_setup.sh
+      become: yes
+
+    - name: Install Node - step 3
+      apt:
+        name: nodejs
+        state: latest
+        update_cache: yes
+      become: yes
+
+    - name: Install yarn
+      command: corepack enable
+      become: yes
+
     # installation acl: https://github.com/georchestra/ansible/issues/55#issuecomment-588313638
-    - name: Install tools
+    - name: Install other tools
       apt:
         pkg:
         - acl
-        - nodejs
-        - yarnpkg
         - git
         - redis-server
         - nginx
