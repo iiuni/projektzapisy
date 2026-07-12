@@ -2,6 +2,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Column, Layout, Row, Submit
 from django import forms
 from django.utils import timezone
+from django.db.models import Q
 
 from apps.common import widgets as common_widgets
 from apps.theses.enums import ThesisKind, ThesisStatus, ThesisVote
@@ -43,7 +44,7 @@ class ThesisFormBase(forms.ModelForm):
                                                 required=False)
     kind = forms.TypedChoiceField(choices=ThesisKind.choices, label="Typ", coerce=int)
     students = forms.ModelMultipleChoiceField(
-        queryset=Student.objects.all(),
+        queryset=Student.objects.none(),
         required=False,
         label="Przypisani studenci",
         widget=forms.SelectMultiple(attrs={'size': '10'}))
@@ -73,6 +74,10 @@ class ThesisFormBase(forms.ModelForm):
 
         self.fields['status'].required = False
 
+        if 'students' in self.initial:
+            assigned_ids = [s.id for s in self.initial['students']]
+            self.fields['students'].queryset = Student.objects.filter(Q(id__in=assigned_ids))
+
         self.helper = FormHelper()
         self.helper.form_method = 'POST'
         self.helper.layout = Layout(
@@ -85,7 +90,9 @@ class ThesisFormBase(forms.ModelForm):
                 Column('max_number_of_students', css_class='form-group col-md-3'),
                 Column('reserved_until', css_class='form-group col-md-6'),
                 css_class='row'),
-            'students',
+            Row(
+                Column('students', css_class='form-group col-md-6'),
+                css_class='row'),
             'description',
         )
         self.helper.add_input(
@@ -93,6 +100,22 @@ class ThesisFormBase(forms.ModelForm):
 
     def clean(self):
         super().clean()
+        # Handle the mess caused by django not recognizing the selected students
+        # (line 47: `queryset=Student.objects.none(),`)
+        if 'students' in self.data:
+            if 'students' in self.errors:
+                # No error, trust me bro
+                self.errors.pop('students')
+            # Handle the mess caused by a different data structure
+            # appearing in tests for some reason
+            # QueryDict in normal use; Python dict in tests; wtf
+            ids_or_students = self.data.getlist('students') if 'getlist' in dir(self.data) else self.data['students']
+            # Help django find out the students actually exist
+            if len(ids_or_students) != 0 and isinstance(ids_or_students[0], str):
+                self.cleaned_data['students'] = Student.objects.filter(Q(id__in=ids_or_students))
+            else:
+                self.cleaned_data['students'] = ids_or_students
+
         students = self.cleaned_data['students']
         max_number_of_students = int(self.cleaned_data['max_number_of_students'])
         if ('students' in self.changed_data or 'max_number_of_students' in self.changed_data) \

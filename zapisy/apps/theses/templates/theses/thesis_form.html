@@ -45,6 +45,8 @@
     <form method="POST" id="confirm-submit" class="post-form">
         {% csrf_token %}
         {% crispy thesis_form %}
+        <input type="hidden" id="ajax-url" value="{% url 'theses:students' %}" />
+        {% render_bundle 'theses-student-search' %} 
     </form>
     {% if confirm_changes %}
         {{ old_instance|json_script:"old_instance" }}

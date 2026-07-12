@@ -12,4 +12,6 @@ urlpatterns = [
     path('<int:id>/form/<int:studentid>', views.gen_form, name="gen_form"),
     path('<int:id>/rejecter', views.rejecter_decision, name="rejecter_thesis"),
     path('<int:id>/delete', views.delete_thesis, name="delete_thesis"),
+    path('students', views.students, name="students"),
+    path('students/<str:substring>', views.students, name="students"),
 ]
