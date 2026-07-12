@@ -5,7 +5,7 @@
     APP_DB_USER: fereol
     APP_DB_PASS: fereolpass
     APP_DB_NAME: fereol
-    PG_VERSION: 12
+    PG_VERSION: 14
     PYTHON: "/home/vagrant/env3/bin/python3"
     ansible_python_interpreter: "/usr/bin/python3"
 
@@ -22,6 +22,13 @@
         - postgresql-{{ PG_VERSION }}
         - postgresql-contrib-{{ PG_VERSION }}
         state: present
+      become: yes
+
+    - name: Ensure PostgreSQL is running
+      service:
+        name: postgresql
+        state: started
+        enabled: yes
       become: yes
 
     - name: Create the database user

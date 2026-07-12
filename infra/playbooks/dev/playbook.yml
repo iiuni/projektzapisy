@@ -6,6 +6,10 @@
     ansible_python_interpreter: "/usr/bin/python3"
 
   tasks:
+    - name: Change permissions to /home/vagrant
+      ansible.builtin.file:
+        path: /home/vagrant
+        mode: "775"
 
     # https://github.com/ansible/ansible/issues/25414#issuecomment-440549135
     - name: Wait for any possibly running unattended upgrade to finish
@@ -45,7 +49,10 @@
       vars:
         ansible_python_interpreter: "{{ PYTHON }}"
       pip:
-        name: pip
+        name: 
+          - pip
+          - wheel
+          - setuptools 
         state: latest
         virtualenv: ~/env3
         virtualenv_command: "{{ PYTHON }} -m venv"
