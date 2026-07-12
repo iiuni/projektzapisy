@@ -5,6 +5,7 @@ from django.views.decorators.http import require_POST
 
 from apps.enrollment.courses.models import Group
 from apps.enrollment.records.models.records import Record
+from apps.enrollment.timetable.models import Pin
 from apps.users.decorators import student_required
 from apps.users.models import Student
 
@@ -55,6 +56,36 @@ def dequeue(request):
         messages.success(request, "Usunięto rekord z grupy/kolejki.")
     else:
         messages.warning(request, "Nie udało się usunąć z grupy/kolejki.")
+    return redirect('course-page', slug=group.course.slug)
+
+
+@student_required
+@require_POST
+def pin(request):
+    """Pins a course to a timetable prototype."""
+    student = request.user.student
+    try:
+        group_id = request.POST['group_id']
+    except KeyError:
+        raise Http404
+    Pin.objects.get_or_create(student_id=student.pk, group_id=group_id)
+    group = Group.objects.select_related('course').get(pk=group_id)
+    group.is_pinned = True
+    return redirect('course-page', slug=group.course.slug)
+
+
+@student_required
+@require_POST
+def unpin(request):
+    """Unpins a course from a timetable prototype."""
+    student = request.user.student
+    try:
+        group_id = request.POST['group_id']
+    except KeyError:
+        raise Http404
+    Pin.objects.filter(student_id=student.pk, group_id=group_id).delete()
+    group = Group.objects.select_related('course').get(pk=group_id)
+    group.is_pinned = False
     return redirect('course-page', slug=group.course.slug)
 
 
