@@ -51,7 +51,7 @@ def get_poll_data(request):
 @student_required
 def tickets_generate(request):
     """Renders tickets_generate page and lists Polls student is entitled to."""
-    semester = Semester.get_current_semester()
+    semester = Semester.get_last_grade_semester()
     is_grade_active = semester.is_grade_active
     if not is_grade_active:
         messages.error(
@@ -110,7 +110,7 @@ def sign_tickets(request):
         return HttpResponseBadRequest("Couldn't parse JSON")
 
     signing_requests = signing_requests_dict['signing_requests']
-    semester = Semester.get_current_semester()
+    semester = Semester.get_last_grade_semester()
     student_polls = {
         poll.pk for poll in Poll.get_all_polls_for_student(request.user.student, semester)
     }

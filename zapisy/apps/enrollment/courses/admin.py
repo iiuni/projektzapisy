@@ -35,7 +35,8 @@ class SemesterAdmin(admin.ModelAdmin):
             'fields': ['year', 'type', 'visible']
         }),
         ('Ocena', {
-            'fields': ['is_grade_active', 'first_grade_semester', 'second_grade_semester']
+            'fields': ['first_grade_semester', 'second_grade_semester',
+                       'semester_grade_beginning', 'semester_grade_ending']
         }),
         ('Czas trwania semestru', {
             'fields': ['semester_beginning', 'semester_ending']
