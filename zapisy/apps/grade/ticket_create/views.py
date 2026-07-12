@@ -42,7 +42,7 @@ def get_poll_data(request):
         poll = key.poll
         poll_data = {
             'key': key.serialize_for_signing_protocol(),
-            'poll_info': poll.serialize_for_signing_protocol(),
+            'poll_info': poll.to_dict(),
         }
         response_data.append(poll_data)
     return JsonResponse(response_data, safe=False)
