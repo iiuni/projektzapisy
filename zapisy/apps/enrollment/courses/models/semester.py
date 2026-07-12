@@ -25,6 +25,12 @@ class Semester(models.Model):
         blank=True,
         verbose_name='Czas otwarcia zapisów',
         help_text='Godzina powinna być ustawiona na 00:00:00, by studenci mieli otwarcie między 10:00 a 22:00.')
+    records_interval = models.IntegerField(
+        null=True,
+        blank=True,
+        default=2,
+        verbose_name='Przerwa między zapisami kolejnych studentów',
+        help_text='Co ile minut powinny otwierać się zapisy dla kolejnych studentów z różną liczbą ECTS.')
     records_closing = models.DateTimeField(
         null=True, blank=True, verbose_name='Czas zamkniecia zapisów')
     records_ending = models.DateTimeField(
@@ -187,6 +193,11 @@ class Semester(models.Model):
             weeks.append((week_start, week_end))
             week_start += timedelta(days=7)
         return weeks
+
+    @property
+    def records_interval_as_timedelta(self) -> timedelta:
+        """Returns spacing between students group as `timedelta` object."""
+        return timedelta(minutes=self.records_interval)
 
     @staticmethod
     def get_semester(date) -> Optional['Semester']:
