@@ -61,13 +61,12 @@ export default class StatisticsList extends Vue {
     <tbody>
       <template v-for="course in coursesList">
         <tr v-show="tester(course)">
-          <th colspan="2">
-            {{ course.course_name }}
-          </th>
+          <th colspan="2">{{ course.course_name }}</th>
           <td colspan="6">
             <span
               v-for="waiting_course in course.waiting_students"
               class="badge bg-danger"
+              data-bs-toggle="tooltip"
               title="Oczekujących niezapisanych"
               style="margin-right: 5px"
             >
@@ -89,7 +88,10 @@ export default class StatisticsList extends Vue {
             {{ group.limit }}
             <template v-for="gs in group.guaranteed_spots">
               +
-              <span :title="'Miejsca gwarantowane dla grupy ' + gs.name + '.'">
+              <span
+                data-bs-toggle="tooltip"
+                :title="'Miejsca gwarantowane dla grupy ' + gs.name + '.'"
+              >
                 {{ gs.limit }}
               </span>
             </template>
