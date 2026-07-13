@@ -21,6 +21,9 @@ ul.schedule-legend {
     &.pinned {
       background: #fae8f8;
     }
+    &.pinned-full {
+      background: #e6cee6;
+    }
   }
 
   // Colours will be presented in divs, icons in spans.
