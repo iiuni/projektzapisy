@@ -5,7 +5,7 @@ from django.test import TestCase
 from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.group import Group
 from apps.enrollment.courses.models.semester import Semester
-from apps.enrollment.courses.views import can_user_view_students_list_for_group
+from apps.enrollment.courses.views.utils import can_user_view_students_list_for_group
 from apps.users.models import Employee
 
 
