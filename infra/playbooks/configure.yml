@@ -53,6 +53,12 @@
         group: "{{ deploy_user }}"
         create_home: yes
 
+    - name: Ensure deploy_user's home directory has correct permissions
+      become: yes
+      file:
+        path: "/home/{{ deploy_user }}"
+        mode: "0755"
+
     - name: Generate Postgres password
       set_fact:
         APP_DB_PASS: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters,digits') }}"
