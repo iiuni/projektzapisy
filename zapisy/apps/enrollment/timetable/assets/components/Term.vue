@@ -143,6 +143,7 @@ export default class TermComponent extends TermProps {
   left: 0;
   bottom: 0;
   right: 0;
+  z-index: 0;
 }
 
 .term-box.enrolled,
@@ -232,7 +233,7 @@ export default class TermComponent extends TermProps {
   left: -25px;
   width: 300px;
   padding: 10px;
-  z-index: 50;
+  z-index: 2;
   border: 1px solid #666666;
   border-radius: 4px;
   background: #f8f8f8;
