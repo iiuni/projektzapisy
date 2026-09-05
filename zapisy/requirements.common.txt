@@ -29,7 +29,7 @@ pyyaml==6.0.3
 # Bokeh - library used for plotting in views displaying Poll results
 bokeh==2.4.3
 # NumPy is required by Bokeh; forced downgrade to be removed after Bokeh upgrade
-numpy==1.23.5
+numpy==1.26.4
 
 gspread==3.7.0
 typing-extensions==3.10.0.2
