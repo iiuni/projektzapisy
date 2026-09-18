@@ -105,6 +105,53 @@
     </div>
     {% endif %}
 
+    {% if user.student %}
+    <div class="mb-5">
+        <h2>Wypisy dyrektorskie</h2>
+        <table class="table table-condensed table-infobox">
+            <colgroup>
+                <col class="header-column"></col>
+            </colgroup>
+            <tr>
+                <th>Wykorzystane wypisy</th>
+                <td>{{ discharge_used }} / {{ discharge_limit }}</td>
+            </tr>
+        </table>
+        {% if all_discharges %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Przedmiot</th>
+                    <th>Semestr</th>
+                    <th>Status</th>
+                    <th>Data złożenia</th>
+                    <th>Data decyzji</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for w in all_discharges %}
+                <tr>
+                    <td>{{ w.course.name }}</td>
+                    <td>{{ w.course.semester }}</td>
+                    <td>
+                        {% if w.is_pending %}
+                            <span class="badge bg-warning text-dark">Oczekujący</span>
+                        {% elif w.is_approved %}
+                            <span class="badge bg-success">Zatwierdzony</span>
+                        {% else %}
+                            <span class="badge bg-danger">Odrzucony</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ w.created|date:"d.m.Y" }}</td>
+                    <td>{{ w.decided_at|date:"d.m.Y"|default:"—" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+    {% endif %}
+
     <div class="mb-5">
         <h2>Terminy</h2>
         <table class="table table-condensed table-infobox">
