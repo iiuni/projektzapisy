@@ -3,9 +3,9 @@ import { every, invokeMap, values } from "lodash";
 import { ThesisInfo } from "./theses";
 
 export interface Filter {
-  visible(c: ThesisInfo): boolean;
+  //previously c: ThesisInfo. Now more universal.
+  visible(c: any): boolean;
 }
-
 interface State {
   filters: { [id: string]: Filter };
 }
@@ -24,6 +24,11 @@ const mutations = {
   // registerFilter can be also used to update filter data.
   registerFilter(state: State, { k, f }: { k: string; f: Filter }) {
     state.filters[k] = f;
+  },
+  // clearFilter can be used to notify filters to reset their state.
+  clearFilters(_: State) {
+    // Intentionally left empty. No state change is required to notify
+    // subscribers of 'filters/clearFilters' mutation.
   },
 };
 
