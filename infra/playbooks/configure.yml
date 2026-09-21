@@ -10,82 +10,86 @@
 
     # https://github.com/ansible/ansible/issues/25414#issuecomment-440549135
     - name: Wait for any possibly running unattended upgrade to finish
-      raw: systemd-run --property="After=apt-daily.service apt-daily-upgrade.service" --wait /bin/true
+      ansible.builtin.raw: systemd-run --property="After=apt-daily.service apt-daily-upgrade.service" --wait /bin/true
       become: yes
 
     - import_tasks: newrelic.yml
       become: yes
+      when: newrelic_license_key != "placeholder"
 
     # installation acl: https://github.com/georchestra/ansible/issues/55#issuecomment-588313638
     - name: Install tools
-      apt:
+      ansible.builtin.apt:
         pkg:
         - acl
         - nodejs
         - yarnpkg
         - git
         - redis-server
+        - memcached
         - nginx
         - postfix
         - p7zip-full
+        update_cache: yes
       become: yes
 
     - name: Install python tools
-      apt:
+      ansible.builtin.apt:
         pkg:
         - python3
         - python3-pip
         - python3-venv
+        - build-essential
         - libpq-dev
         - python3-psycopg2
       become: yes
 
     - name: Ensure group for deploy_user exists
       become: yes
-      group:
+      ansible.builtin.group:
         name: "{{ deploy_user }}"
         state: present
 
     - name: Add the deploy_user to remote machine
       become: yes
-      user:
+      ansible.builtin.user:
         name: "{{ deploy_user }}"
         group: "{{ deploy_user }}"
         create_home: yes
 
     - name: Generate Postgres password
-      set_fact:
+      ansible.builtin.set_fact:
         APP_DB_PASS: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters,digits') }}"
       no_log: True
 
     - name: Generate Django Secret key
-      set_fact:
+      ansible.builtin.set_fact:
         DJANGO_SECRET_KEY: "{{ lookup('password', '/dev/null length=50 chars=printable') }}"
       no_log: True
 
     - name: Copy .env file to deploy_user's home and edit
       become: yes
       become_user: "{{ deploy_user }}"
-      template:
+      ansible.builtin.template:
         src: templates/env.j2
         dest: "/home/{{ deploy_user }}/.env"
 
     - name: Copy newrelic.ini to deploy_user's home
       become: yes
       become_user: "{{ deploy_user }}"
-      template:
+      ansible.builtin.template:
         src: templates/newrelic.ini.j2
         dest: "/home/{{ deploy_user }}/newrelic.ini"
 
     # Configure postgres
     - name: Ensure a locale exists
-      locale_gen:
+      community.general.locale_gen:
         name: pl_PL.UTF-8
         state: present
       become: yes
 
     - name: Install postgresql and postgresql-contrib
-      apt:
+      ansible.builtin.apt:
         pkg:
         - postgresql
         - postgresql-contrib
@@ -95,7 +99,7 @@
     - name: Create the database user
       become: yes
       become_user: postgres
-      postgresql_user:
+      community.postgresql.postgresql_user:
         name: "{{ APP_DB_USER }}"
         password: "{{ APP_DB_PASS }}"
         role_attr_flags: CREATEDB
@@ -104,7 +108,7 @@
     - name: Create the database
       become: yes
       become_user: postgres
-      postgresql_db:
+      community.postgresql.postgresql_db:
         name: "{{ APP_DB_NAME }}"
         owner: "{{ APP_DB_USER }}"
         encoding: UTF-8
@@ -114,34 +118,34 @@
 
     # Configure and sandbox Nginx
     - name: Stop nginx service
-      systemd:
+      ansible.builtin.systemd_service:
         name: nginx
         state: stopped
       become: yes
 
     - name: Adding user www-data to group ssl-cert
-      user:
+      ansible.builtin.user:
         name: "www-data"
         groups: "ssl-cert"
         append: yes
       become: yes
 
     - name: Copy nginx service file to /etc
-      copy:
+      ansible.builtin.copy:
         src: templates/nginx.service
         dest: /etc/systemd/system/nginx.service
         force: yes
       become: yes
 
     - name: Delete nginx service file from /lib
-      file:
+      ansible.builtin.file:
         path: /lib/systemd/system/nginx.service
         state: absent
       become: yes
 
     - name: Deploy nginx configs
       become: yes
-      copy:
+      ansible.builtin.copy:
         src: "templates/{{ item.file }}"
         dest: "/etc/nginx/{{ item.path }}"
         force: yes
@@ -151,7 +155,7 @@
 
     - name: Deploy nginx configs with templating
       become: yes
-      template:
+      ansible.builtin.template:
         src: "templates/{{ item.file }}.j2"
         dest: "/etc/nginx/{{ item.path }}/{{ item.file }}"
       with_items:
@@ -161,13 +165,13 @@
     # Generate a self-signed certificate if none exists
     - name: Check if certificate exists
       become: yes
-      stat:
+      ansible.builtin.stat:
         path: /etc/ssl/private/{{ deploy_server_name }}.key
       register: ssl_key
 
     - name: Generate an OpenSSL private key
       become: yes
-      openssl_privatekey:
+      community.crypto.openssl_privatekey:
         path: "/etc/ssl/private/{{ deploy_server_name }}.key"
         group: ssl-cert
         mode: 0640
@@ -175,7 +179,7 @@
 
     - name: Generate an OpenSSL CSR
       become: yes
-      openssl_csr:
+      community.crypto.openssl_csr:
         path: "/etc/ssl/private/{{ deploy_server_name }}.csr"
         privatekey_path: "/etc/ssl/private/{{ deploy_server_name }}.key"
         common_name: "{{ deploy_server_name }}"
@@ -183,7 +187,7 @@
 
     - name: Generate a Self Signed OpenSSL certificate
       become: yes
-      openssl_certificate:
+      community.crypto.x509_certificate:
         path: "/etc/ssl/certs/{{ deploy_server_name }}.crt"
         privatekey_path: "/etc/ssl/private/{{ deploy_server_name }}.key"
         csr_path: "/etc/ssl/private/{{ deploy_server_name }}.csr"
@@ -192,80 +196,81 @@
 
     - name: Generate Diffie-Hellman parameters
       become: yes
-      openssl_dhparam:
+      community.crypto.openssl_dhparam:
         path: /etc/nginx/dhparam.pem
         size: 2048
 
     # Configure Postfix
     - name: Configure Postfix service
-      template:
+      ansible.builtin.template:
         src: templates/main.cf.j2
         dest: /etc/postfix/main.cf
       become: yes
-    
+
 
     - name: Reload Postfix services
-      systemd:
+      ansible.builtin.systemd_service:
         name: postfix
         state: restarted
       become: yes
-    
+
     - name: Reload Postfix worker
-      systemd:
+      ansible.builtin.systemd_service:
         name: postfix@-
         state: restarted
       become: yes
 
     # Configure other services
     - name: Get number of CPUs
-      shell: nproc
+      ansible.builtin.command: nproc
+      changed_when: false
       register: nproc_out
 
     - name: Deploy gunicorn service
-      template:
+      ansible.builtin.template:
         src: templates/gunicorn.service.j2
         dest: /etc/systemd/system/gunicorn.service
       become: yes
 
     - name: Deploy backup service
-      template:
+      ansible.builtin.template:
         src: templates/backup.service.j2
         dest: /etc/systemd/system/backup.service
       become: yes
 
     - name: Deploy backup timer
-      copy:
+      ansible.builtin.copy:
         src: templates/backup.timer
         dest: /etc/systemd/system/backup.timer
         force: yes
       become: yes
 
     - name: Deploy django_cleanup service
-      template:
+      ansible.builtin.template:
         src: templates/django_cleanup.service.j2
         dest: /etc/systemd/system/django_cleanup.service
       become: yes
-    
+
     - name: Deploy django_cleanup timer
-      copy:
+      ansible.builtin.copy:
         src: templates/django_cleanup.timer
         dest: /etc/systemd/system/django_cleanup.timer
         force: yes
       become: yes
 
     - name: Deploy rqworker-default
-      template:
+      ansible.builtin.template:
         src: templates/rqworker-default.service.j2
         dest: /etc/systemd/system/rqworker-default.service
       become: yes
 
     - name: Deploy rqworker to dispatching notifications
-      template:
+      ansible.builtin.template:
         src: templates/rqworker-notifications.service.j2
         dest: /etc/systemd/system/rqworker-notifications.service
       become: yes
 
     - name: Systemd daemon reload
-      systemd:
+      ansible.builtin.systemd_service:
         daemon_reload: yes
       become: yes

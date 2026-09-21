@@ -39,7 +39,7 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': env.str('DATABASE_NAME'),
         'PORT': env.str('DATABASE_PORT'),
         'USER': env.str('DATABASE_USER'),
@@ -139,6 +139,12 @@ LOGGING = {
 # system time zone.
 TIME_ZONE = 'Europe/Warsaw'
 
+# Since Django 5.0 USE_TZ defaults to True. The database stores naive
+# datetimes (`timestamp without time zone`) interpreted as TIME_ZONE, so we keep
+# the historical behaviour. Switching it on would require converting every
+# datetime column and reinterpreting the data already stored in them.
+USE_TZ = False
+
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'pl-pl'
@@ -152,6 +158,11 @@ LANGUAGES = (
 )
 
 SITE_ID = 1
+
+# All the existing tables use a 32-bit serial primary key. Django asks us to
+# declare it explicitly (models.W042) so that the default can be changed in a
+# future release without silently altering our schema.
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
@@ -203,10 +214,6 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
 
-    # needed from 1.7 onwards to prevent Django from trying to apply
-    # migrations when testing (slows down DB setup _a lot_)
-    'test_without_migrations',
-
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -240,8 +247,8 @@ INSTALLED_APPS = (
     'apps.effects',
     'django_extensions',
     'django_filters',
-    'bootstrap_pagination',
     'crispy_forms',
+    'crispy_bootstrap4',
     'apps.notifications',
     'django_cas_ng',
     'django_rq',
@@ -279,7 +286,7 @@ CAS_CHECK_NEXT = lambda _: True  # noqa: E731
 
 LOGIN_REDIRECT_URL = '/users/'
 
-TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+TEST_RUNNER = 'zapisy.test_runner.ZapisyTestRunner'
 
 # Settings for enrollment.
 # Bonus minutes per one ECTS credit. This setting affects T0 times computation.
@@ -296,11 +303,6 @@ SESSION_COOKIE_PATH = '/;HttpOnly'
 SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', default=False)
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-
-# Attach X-XSS-Protection header to all outgoing HTTP responses.
-# It tells conformant browsers to activate their built-in
-# XSS (cross-site scripting attack) detection filter.
-SECURE_BROWSER_XSS_FILTER = True
 
 # Attach X-Content-Type-Options header with a value of nosniff
 # to all outgoing HTTP responses.
@@ -354,14 +356,21 @@ DEBUG_TOOLBAR_CONFIG = {
 
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
         'LOCATION': '127.0.0.1:11211',
         'TIMEOUT': 300,
+        'OPTIONS': {
+            # The python-memcached client used before Django 4.1 swallowed
+            # connection errors; pymemcache raises them by default, which would
+            # turn a memcached outage into a site outage.
+            'ignore_exc': True,
+        },
     }
 }
 
 NEWS_PER_PAGE = 15
 
+CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap4'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
@@ -373,13 +382,10 @@ STATICFILES_DIRS = (
 WEBPACK_LOADER = {
     'DEFAULT': {
         'CACHE': not DEBUG,
-        # This setting is badly named, it's the bundle dir relative
-        # to whatever you have in your STATICFILES_DIRS
-        'BUNDLE_DIR_NAME': '',
         'STATS_FILE': os.path.join(BASE_DIR, "webpack_resources", 'webpack-stats.json'),
         'POLL_INTERVAL': 0.1,
         'TIMEOUT': None,
-        'IGNORE': [r'.+\.hot-update.js', r'.+\.map']
+        'IGNORE': [r'.+\.hot-update.js', r'.+\.map'],
     }
 }
 REST_FRAMEWORK = {

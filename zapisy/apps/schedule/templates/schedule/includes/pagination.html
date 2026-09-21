@@ -1,0 +1,50 @@
+{% comment %}
+Bootstrap pager for a Paginator page.
+
+Replaces the `bootstrap_paginate` tag of django-bootstrap-pagination, which
+does not support Django 3 and newer. `{% querystring %}` (Django 5.1) keeps the
+filter parameters already present in the query string.
+
+Expects:
+  page        - a django.core.paginator.Page,
+  page_range  - the page numbers to list, interleaved with
+                `page.paginator.ELLIPSIS`, as returned by
+                Paginator.get_elided_page_range().
+{% endcomment %}
+{% if page.paginator.num_pages > 1 %}
+<ul class="pagination">
+  {% if page.has_previous %}
+    <li class="page-item">
+      <a class="page-link" href="{% querystring page=1 %}" title="Pierwsza strona" aria-label="Pierwsza strona"><span aria-hidden="true">&laquo;</span></a>
+    </li>
+    <li class="page-item">
+      <a class="page-link" href="{% querystring page=page.previous_page_number %}" title="Poprzednia strona" aria-label="Poprzednia strona"><span aria-hidden="true">&larr;</span></a>
+    </li>
+  {% else %}
+    <li class="page-item disabled"><span class="page-link" aria-hidden="true">&laquo;</span></li>
+    <li class="page-item disabled"><span class="page-link" aria-hidden="true">&larr;</span></li>
+  {% endif %}
+
+  {% for number in page_range %}
+    {% if number == page.paginator.ELLIPSIS %}
+      <li class="page-item disabled"><span class="page-link">{{ number }}</span></li>
+    {% elif number == page.number %}
+      <li class="page-item active"><span class="page-link" aria-current="page">{{ number }}</span></li>
+    {% else %}
+      <li class="page-item"><a class="page-link" href="{% querystring page=number %}">{{ number }}</a></li>
+    {% endif %}
+  {% endfor %}
+
+  {% if page.has_next %}
+    <li class="page-item">
+      <a class="page-link" href="{% querystring page=page.next_page_number %}" title="Następna strona" aria-label="Następna strona"><span aria-hidden="true">&rarr;</span></a>
+    </li>
+    <li class="page-item">
+      <a class="page-link" href="{% querystring page=page.paginator.num_pages %}" title="Ostatnia strona" aria-label="Ostatnia strona"><span aria-hidden="true">&raquo;</span></a>
+    </li>
+  {% else %}
+    <li class="page-item disabled"><span class="page-link" aria-hidden="true">&rarr;</span></li>
+    <li class="page-item disabled"><span class="page-link" aria-hidden="true">&raquo;</span></li>
+  {% endif %}
+</ul>
+{% endif %}

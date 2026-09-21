@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib import messages
 import environ
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
+from google.oauth2.service_account import Credentials
 
 from gspread.exceptions import GSpreadException
 from google.auth.exceptions import GoogleAuthError
@@ -31,7 +31,7 @@ CLASS_ASSIGNMENT_SPREADSHEET_ID = env('CLASS_ASSIGNMENT_SPREADSHEET_ID')
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 
-def create_sheets_service(sheet_id: str) -> gspread.models.Spreadsheet:
+def create_sheets_service(sheet_id: str) -> gspread.Spreadsheet:
     """Creates a Google Sheets connection.
 
     Loads up data from environment, creates credentials and connects to
@@ -49,8 +49,7 @@ def create_sheets_service(sheet_id: str) -> gspread.models.Spreadsheet:
         "auth_provider_x509_cert_url": env('GDRIVE_AUTH_PROVIDER'),
         "client_x509_cert_url": env('GDRIVE_CLIENT_CERT_URL')
     }
-    credentials = ServiceAccountCredentials.from_json_keyfile_dict(
-        creds, SCOPES)
+    credentials = Credentials.from_service_account_info(creds, scopes=SCOPES)
     gc = gspread.authorize(credentials)
     sh = gc.open_by_key(sheet_id)
     update_locale_request = {
@@ -83,7 +82,7 @@ def voting_sheet_or_none(request):
         return None
 
 
-def find_or_insert_worksheet(sheet: gspread.models.Spreadsheet, name):
+def find_or_insert_worksheet(sheet: gspread.Spreadsheet, name):
     try:
         return sheet.worksheet(name)
     except gspread.WorksheetNotFound:
@@ -158,7 +157,7 @@ def votes_to_sheets_format(votes: VotingSummaryPerYear, years: List[str]) -> Lis
     return legend_rows + list(flatten(proposal_rows))
 
 
-def update_voting_results_sheet(sheet: gspread.models.Spreadsheet, votes: VotingSummaryPerYear,
+def update_voting_results_sheet(sheet: gspread.Spreadsheet, votes: VotingSummaryPerYear,
                                 years: List[str]):
     data = votes_to_sheets_format(votes, years)
     sheet.sheet1.clear()
@@ -174,7 +173,7 @@ def update_voting_results_sheet(sheet: gspread.models.Spreadsheet, votes: Voting
     sheet.sheet1.freeze(rows=2)
 
 
-def read_opening_recommendations(sheet: gspread.models.Spreadsheet) -> Set[int]:
+def read_opening_recommendations(sheet: gspread.Spreadsheet) -> Set[int]:
     """Reads recommendations (whether to open course) from the voting sheet."""
     worksheet = sheet.sheet1
     try:
@@ -238,16 +237,16 @@ def proposal_to_sheets_format(groups: ProposalSummary):
     return data
 
 
-def update_assignments_sheet(sheet: gspread.models.Spreadsheet, proposal: ProposalSummary):
+def update_assignments_sheet(sheet: gspread.Spreadsheet, proposal: ProposalSummary):
     data = proposal_to_sheets_format(proposal)
     worksheet = find_or_insert_worksheet(sheet, "Przydziały")
     worksheet.clear()
-    worksheet.update('A:N', data, raw=False)
+    worksheet.update(data, 'A:N', raw=False)
     worksheet.format('M:N', {'textFormat': {'italic': True}})
     worksheet.freeze(rows=1)
 
 
-def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> Iterator[SingleAssignmentData]:
+def read_assignments_sheet(sheet: gspread.Spreadsheet) -> Iterator[SingleAssignmentData]:
     """Reads confirmed assignments from the spreadsheet.
 
     Raises:
@@ -283,7 +282,7 @@ def read_assignments_sheet(sheet: gspread.models.Spreadsheet) -> Iterator[Single
                 f"Błąd czytania arkusza przydziałów (wiersz {i}): {str(e).capitalize()}.")
 
 
-def update_courses_sheet(sheet: gspread.models.Spreadsheet, courses: List[SingleCourseData]):
+def update_courses_sheet(sheet: gspread.Spreadsheet, courses: List[SingleCourseData]):
     data = [[
         'Proposal ID', 'Przedmiot', 'Rodzaj', 'Tagi', 'ECTS', 'Semestr',
         'Planowana liczba grup', 'Uruchomiona liczba grup'
@@ -304,11 +303,11 @@ def update_courses_sheet(sheet: gspread.models.Spreadsheet, courses: List[Single
 
     worksheet = find_or_insert_worksheet(sheet, "Przedmioty")
     worksheet.clear()
-    worksheet.update('A:H', data, raw=False)
+    worksheet.update(data, 'A:H', raw=False)
     worksheet.freeze(rows=1)
 
 
-def read_courses_sheet(sheet: gspread.models.Spreadsheet) -> Iterator[SingleCourseData]:
+def read_courses_sheet(sheet: gspread.Spreadsheet) -> Iterator[SingleCourseData]:
     """Reads information about courses from the spreadsheet."""
     try:
         worksheet = sheet.worksheet("Przedmioty")
@@ -331,7 +330,7 @@ def read_courses_sheet(sheet: gspread.models.Spreadsheet) -> Iterator[SingleCour
             pass
 
 
-def update_employees_sheet(sheet: gspread.models.Spreadsheet, teachers: List[EmployeeData]):
+def update_employees_sheet(sheet: gspread.Spreadsheet, teachers: List[EmployeeData]):
     data = [[
         'Username', 'Imię', 'Nazwisko', 'Status', 'Pensum', 'Godziny (z)', 'Godziny (l)',
         'Godziny razem', 'Bilans'
@@ -355,12 +354,12 @@ def update_employees_sheet(sheet: gspread.models.Spreadsheet, teachers: List[Emp
 
     worksheet = find_or_insert_worksheet(sheet, "Pracownicy")
     worksheet.clear()
-    worksheet.update('A:I', data, raw=False)
+    worksheet.update(data, 'A:I', raw=False)
     worksheet.format('F:I', {'textFormat': {'italic': True}})
     worksheet.freeze(rows=1)
 
 
-def read_employees_sheet(sheet: gspread.models.Spreadsheet) -> EmployeesSummary:
+def read_employees_sheet(sheet: gspread.Spreadsheet) -> EmployeesSummary:
     """Reads Employee data from the Spreadsheet.
 
     Raises:

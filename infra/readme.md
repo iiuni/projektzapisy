@@ -3,6 +3,20 @@
 This manual will allow you to configure the remote machine with the Ubuntu
 system and deploy System Zapisów on it.
 
+## Requirements
+
+On the remote machine:
+
+- Ubuntu 26.04 LTS (Python 3.14, PostgreSQL 18, Node 22). Any release whose
+  `python3` is 3.10 or newer will do — that is what Django 5.2 needs.
+
+On the machine you run the playbooks from:
+
+- `ansible` (the full distribution, not just `ansible-core`). The playbooks use
+  modules from the `community.general`, `community.postgresql` and
+  `community.crypto` collections; installing `ansible-core` alone means
+  installing those collections yourself with `ansible-galaxy`.
+
 ## Setting up the machine
 
 Every admin has his own account with no-password sudo privileges on the remote

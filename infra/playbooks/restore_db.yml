@@ -8,31 +8,31 @@
 
   tasks:
     - name: Copy a archives of database dump file
-      copy:
+      ansible.builtin.copy:
         src: dump.7z
         dest: /tmp
         force: yes
 
     - name: Unarchive a dump file
-      shell: 7z x /tmp/dump.7z -o/tmp
+      ansible.builtin.shell: 7z x /tmp/dump.7z -o/tmp
 
     - name: Stop nginx service
       become: yes
-      service:
+      ansible.builtin.service:
         name: nginx
         state: stopped
 
     - name: Drop database
       become: yes
       become_user: postgres
-      postgresql_db:
+      community.postgresql.postgresql_db:
         name: "{{ APP_DB_NAME }}"
         state: absent
 
     - name: Create the database
       become: yes
       become_user: postgres
-      postgresql_db:
+      community.postgresql.postgresql_db:
         name: "{{ APP_DB_NAME }}"
         owner: "{{ APP_DB_USER }}"
         encoding: UTF-8
@@ -43,7 +43,7 @@
     - name: Restore the database
       become: yes
       become_user: postgres
-      postgresql_db:
+      community.postgresql.postgresql_db:
           name: "{{ APP_DB_NAME }}"
           state: restore
           target: "/tmp/ii_zapisy_dump_dev.sql"
@@ -51,31 +51,31 @@
     - name: Apply migrates
       become: yes
       become_user: "{{ deploy_user }}"
-      django_manage:
+      community.general.django_manage:
         command: migrate
         app_path: "/home/{{ deploy_user }}/deploy/current/zapisy"
         virtualenv: "/home/{{ deploy_user }}/deploy/current/venv"
 
     - name: Restart gunicorn service
       become: yes
-      service:
+      ansible.builtin.service:
         name: gunicorn
         enabled: yes
         state: restarted
 
     - name: Enable and run nginx service
       become: yes
-      service:
+      ansible.builtin.service:
         name: nginx
         enabled: yes
         state: started
 
     - name: Remove a copy of database
-      file:
+      ansible.builtin.file:
         path: "/tmp/ii_zapisy_dump_dev.sql"
         state: absent
 
     - name: Remove a copy of archive
-      file:
+      ansible.builtin.file:
         path: "/tmp/dump.7z"
         state: absent

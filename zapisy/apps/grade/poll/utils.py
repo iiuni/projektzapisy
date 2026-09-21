@@ -150,7 +150,7 @@ class PollSummarizedResultsEntry:
     def plot(self):
         """Generates an embeddable plot.
 
-        https://bokeh.pydata.org/en/latest/docs/user_guide/embed.html#components
+        https://docs.bokeh.org/en/latest/docs/user_guide/output/embed.html
 
         :returns: a tuple of (javascript code, html code) that can be
             used for embedding plots in the template.
@@ -159,7 +159,7 @@ class PollSummarizedResultsEntry:
             plot = bokeh.plotting.figure(
                 y_range=self._choices,
                 sizing_mode='scale_width',
-                plot_height=250,
+                height=250,
                 toolbar_location=None,
                 tools='',
             )

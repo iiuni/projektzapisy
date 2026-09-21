@@ -33,8 +33,8 @@ GROUP_TYPES = {
 GroupId = str
 TeacherId = str
 TermId = str
-GroupExtra = TypedDict('GroupExtra', course=str, group_type=str)
-TeacherExtra = TypedDict('TeacherExtra', first_name=str, last_name=str)
+GroupExtra = TypedDict('GroupExtra', {'course': str, 'group_type': str})
+TeacherExtra = TypedDict('TeacherExtra', {'first_name': str, 'last_name': str})
 
 
 class SchedulerAPIGroup(TypedDict):
@@ -68,7 +68,7 @@ class SchedulerAPIConfig(TypedDict):
 
 
 # The second file is 'task': a product of a Scheduler run.
-SchedulerAPIResult = TypedDict('Result', room=str, term=TermId)
+SchedulerAPIResult = TypedDict('Result', {'room': str, 'term': TermId})
 SchedulerAPIResultMap = Dict[GroupId, List[SchedulerAPIResult]]
 SchedulerAPITask = TypedDict(
     'Task', {'timetable': TypedDict('Timetable', {'results': SchedulerAPIResultMap})})

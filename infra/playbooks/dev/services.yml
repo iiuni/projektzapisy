@@ -3,35 +3,35 @@
 
   tasks:
     - name: Deploy Django Runserver
-      copy:
+      ansible.builtin.copy:
         src: runserver.service
         dest: /etc/systemd/system/
         force: yes
       become: yes
 
     - name: Deploy yarn install
-      copy:
+      ansible.builtin.copy:
         src: yarn.service
         dest: /etc/systemd/system/
         force: yes
       become: yes
 
     - name: Deploy yarn dev:watch
-      copy:
+      ansible.builtin.copy:
         src: yarn_dev_watch.service
         dest: /etc/systemd/system/
         force: yes
       become: yes
 
     - name: Deploy rqworker1
-      copy:
+      ansible.builtin.copy:
         src: rqworker1.service
         dest: /etc/systemd/system/
         force: yes
       become: yes
 
     - name: Deploy rqworker2
-      copy:
+      ansible.builtin.copy:
         src: rqworker2.service
         dest: /etc/systemd/system/
         force: yes
@@ -39,40 +39,40 @@
 
     # Enable and run
     - name: Systemd daemon reload
-      systemd:
+      ansible.builtin.systemd_service:
         daemon_reload: yes
       become: yes
 
     - name: Enable and run Django Runserver service
-      service:
+      ansible.builtin.service:
         name: runserver
         enabled: yes
         state: started
       become: yes
 
     - name: Start yarn
-      systemd:
+      ansible.builtin.systemd_service:
         name: yarn
         enabled: yes
         state: started
       become: yes
 
     - name: Enable and run yarn_dev_watch service
-      service:
+      ansible.builtin.service:
         name: yarn_dev_watch
         enabled: yes
         state: started
       become: yes
 
     - name: Enable and run rqworker1 service
-      service:
+      ansible.builtin.service:
         name: rqworker1
         enabled: yes
         state: started
       become: yes
 
     - name: Enable and run rqworker2 service
-      service:
+      ansible.builtin.service:
         name: rqworker2
         enabled: yes
         state: started

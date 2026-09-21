@@ -1,30 +1,35 @@
-- name: Add New Relic APT Key
-  apt_key:
-    id: A758B3FBCD43BE8D123A3476BB29EE038ECCE87C
-    url: https://download.newrelic.com/infrastructure_agent/gpg/newrelic-infra.gpg
+# Included by configure.yml only when a real newrelic_license_key is configured.
+#
+# `apt-key` no longer exists on current Ubuntu releases, so the repository is
+# declared in the deb822 format, which carries its signing key with it.
+- name: Add the New Relic APT repository
+  ansible.builtin.deb822_repository:
+    name: newrelic
+    types: deb
+    uris: https://download.newrelic.com/infrastructure_agent/linux/apt
+    suites: "{{ newrelic_apt_codename | default(ansible_distribution_release) }}"
+    components: main
+    architectures: amd64
+    signed_by: https://download.newrelic.com/infrastructure_agent/gpg/newrelic-infra.gpg
     state: present
-
-- name: Add New Relic APT Repository
-  apt_repository:
-    repo: deb [arch=amd64] https://download.newrelic.com/infrastructure_agent/linux/apt bionic main
-    state: present
-    filename: newrelic
+    enabled: yes
 
 - name: Add licence key to New Relic agent configuration
-  template:
+  ansible.builtin.template:
     src: templates/newrelic-infra.yml.j2
     dest: /etc/newrelic-infra.yml
 
 - name: Install the New Relic Agent
-  apt:
+  ansible.builtin.apt:
     pkg: newrelic-infra
+    update_cache: yes
 
 - name: Add logs configuration to New Relic.
-  template:
+  ansible.builtin.template:
     src: templates/newrelic-server-logs.yml.j2
     dest: /etc/newrelic-infra/logging.d/server-logs.yml
 
 - name: Reload the New Relic Agent as there may be a new configuration
-  service:
+  ansible.builtin.systemd_service:
     name: newrelic-infra
     state: restarted

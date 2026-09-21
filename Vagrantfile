@@ -7,10 +7,9 @@
 # you're doing.
 Vagrant.configure(2) do |config|
   config.ssh.shell = "bash"
-  config.vm.box = "ubuntu/focal64"
+  config.vm.box = "ubuntu/noble64"
 
-  # Installs ansible as it is not yet provided for focal.
-  # https://github.com/ansible/ansible/issues/69203
+  # Make sure Ansible is present before the ansible_local provisioner runs.
   config.vm.provision "shell", inline: <<-SHELL
     sudo apt-get update -qq
     sudo DEBIAN_FRONTEND=noninteractive apt-get install ansible acl -qq > /dev/null
@@ -29,7 +28,8 @@ Vagrant.configure(2) do |config|
     # Enable "IO APIC" for better multicore performance, see
     # https://serverfault.com/questions/74672/why-should-i-enable-io-apic-in-virtualbox
     vb.customize ["modifyvm", :id, "--ioapic", "on"]
-    # Fix Ubuntu Focal box issue: https://bugs.launchpad.net/cloud-images/+bug/1829625
+    # Silence the serial console the Ubuntu cloud images write to:
+    # https://bugs.launchpad.net/cloud-images/+bug/1829625
     vb.customize [ "modifyvm", :id, "--uartmode1", "file", File::NULL ]
   end
 end

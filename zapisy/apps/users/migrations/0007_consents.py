@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             name='Consents',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('granted', models.NullBooleanField(verbose_name='zgoda udzielona')),
+                ('granted', models.BooleanField(null=True, verbose_name='zgoda udzielona')),
                 ('student', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='consent', to='users.Student')),
             ],
             options={

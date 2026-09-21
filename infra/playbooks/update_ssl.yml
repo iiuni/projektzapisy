@@ -6,7 +6,7 @@
 
   tasks:
     - name: Deploy new OpenSSL private key
-      copy:
+      ansible.builtin.copy:
         src: ssl/zapisy.key
         dest: "/etc/ssl/private/{{ deploy_server_name }}.key"
         force: yes
@@ -15,7 +15,7 @@
       become: yes
 
     - name: Deploy new OpenSSL certificate
-      copy:
+      ansible.builtin.copy:
         src: ssl/zapisy.crt
         dest: "/etc/ssl/certs/{{ deploy_server_name }}.crt"
         force: yes
@@ -23,7 +23,7 @@
       become: yes
 
     - name: Restart nginx service
-      service:
+      ansible.builtin.service:
         name: nginx
         enabled: yes
         state: restarted

@@ -101,8 +101,7 @@ const PLUGINS = [
       })
     : false,
   new BundleTracker({
-    path: path.resolve(STATS_DIR),
-    filename: "webpack-stats.json",
+    filename: path.resolve(STATS_DIR, "webpack-stats.json"),
   }),
 ].filter(Boolean);
 
@@ -110,6 +109,9 @@ const WEBPACK_CONFIG = {
   entry: ASSET_DEFS,
   output: {
     path: path.resolve(BUNDLE_OUTPUT_DIR),
+    // django-webpack-loader builds the asset URLs from the publicPath that
+    // webpack-bundle-tracker writes into the stats file.
+    publicPath: "/static/",
     filename: DEV_MODE ? "[name]_[hash].js" : "[name]_[hash].min.js",
   },
   module: {

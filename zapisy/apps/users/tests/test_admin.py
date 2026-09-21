@@ -73,4 +73,4 @@ class AdminTestCase(TestCase):
         # and we have to log in for each test.
         response = self.client.get(link_text, follow=True)
         assert 'user-tools' in str(response.content)
-        self.client.get("/fereol_admin/logout/", follow=True)
+        self.client.post("/fereol_admin/logout/", follow=True)

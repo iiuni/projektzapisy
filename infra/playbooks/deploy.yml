@@ -9,28 +9,28 @@
     - name: Initialize the deploy root and gather facts
       become: yes
       become_user: "{{ deploy_user }}"
-      deploy_helper:
+      community.general.deploy_helper:
         path: "/home/{{ deploy_user }}/deploy"
         state: present
 
     - name: Clone the project to the new release folder
       become: yes
       become_user: "{{ deploy_user }}"
-      git:
+      ansible.builtin.git:
         repo: 'https://github.com/iiuni/projektzapisy.git'
         dest: "{{ deploy_helper.new_release_path }}"
         version: "{{ deploy_version }}"
 
     - name: Add an unfinished file, to allow cleanup on successful finalize
       become: yes
-      file:
+      ansible.builtin.file:
         path: "{{ deploy_helper.new_release_path }}/{{ deploy_helper.unfinished_filename }}"
         state: touch
 
     - name: Copy .env file
       become: yes
       become_user: "{{ deploy_user }}"
-      copy:
+      ansible.builtin.copy:
         src: "/home/{{ deploy_user }}/.env"
         dest: "{{ deploy_helper.new_release_path }}/env"
         force: yes
@@ -39,14 +39,14 @@
     - name: Add execute permission to perform_dump.sh file
       become: yes
       become_user: "{{ deploy_user }}"
-      file:
+      ansible.builtin.file:
         path: "{{ deploy_helper.new_release_path }}/infra/db_backups/perform_dump.sh"
         mode: '0774'
 
     - name: Upgrade pip
       become: yes
       become_user: "{{ deploy_user }}"
-      pip:
+      ansible.builtin.pip:
         name: pip
         state: latest
         virtualenv: "{{ deploy_helper.new_release_path }}/venv"
@@ -55,14 +55,14 @@
     - name: Set up virtualenv and get requirements
       become: yes
       become_user: "{{ deploy_user }}"
-      pip:
+      ansible.builtin.pip:
         virtualenv: "{{ deploy_helper.new_release_path }}/venv"
         virtualenv_command: "{{ ansible_python_interpreter }} -m venv"
         requirements: "{{ deploy_helper.new_release_path }}/zapisy/requirements.production.txt"
 
     - name: Create logs directory
       become: yes
-      file:
+      ansible.builtin.file:
         path: "{{ deploy_helper.new_release_path }}/zapisy/logs"
         owner: "{{ deploy_user }}"
         state: directory
@@ -72,21 +72,21 @@
     - name: Create static directory
       become: yes
       become_user: "{{ deploy_user }}"
-      file:
+      ansible.builtin.file:
         path: "{{ deploy_helper.new_release_path }}/zapisy/static"
         state: directory
 
     - name: Create compiled_assets directory
       become: yes
       become_user: "{{ deploy_user }}"
-      file:
+      ansible.builtin.file:
         path: "{{ deploy_helper.new_release_path }}/zapisy/compiled_assets"
         state: directory
 
     - name: Apply migrates
       become: yes
       become_user: "{{ deploy_user }}"
-      django_manage:
+      community.general.django_manage:
         command: migrate
         app_path: "{{ deploy_helper.new_release_path }}/zapisy"
         virtualenv: "{{ deploy_helper.new_release_path }}/venv"
@@ -94,28 +94,28 @@
     - name: Make sure that directory for gunicorn exists
       become: yes
       become_user: "{{ deploy_user }}"
-      file:
+      ansible.builtin.file:
         path: "{{ deploy_helper.new_release_path }}/venv/run/"
         state: directory
 
     - name: Install dependencies based on package.json
       become: yes
       become_user: "{{ deploy_user }}"
-      command: yarnpkg install --immutable
+      ansible.builtin.command: yarnpkg install --immutable
       args:
         chdir: "{{ deploy_helper.new_release_path }}/zapisy/"
 
     - name: Build project
       become: yes
       become_user: "{{ deploy_user }}"
-      command: yarnpkg build
+      ansible.builtin.command: yarnpkg build
       args:
         chdir: "{{ deploy_helper.new_release_path }}/zapisy/"
 
     - name: Django collect static files
       become: yes
       become_user: "{{ deploy_user }}"
-      django_manage:
+      community.general.django_manage:
         command: collectstatic
         app_path: "{{ deploy_helper.new_release_path }}/zapisy"
         virtualenv: "{{ deploy_helper.new_release_path }}/venv"
@@ -123,7 +123,7 @@
     - name: Finalize the deploy, removing the unfinished file and switching the symlink
       become: yes
       become_user: "{{ deploy_user }}"
-      deploy_helper:
+      community.general.deploy_helper:
         path: "/home/{{ deploy_user }}/deploy"
         release: "{{ deploy_helper.new_release }}"
         state: finalize
@@ -131,13 +131,14 @@
         keep_releases: 2
 
     - name: Get revision
-      shell: git rev-parse HEAD
+      ansible.builtin.command: git rev-parse HEAD
+      changed_when: false
       register: git_rev
       args:
         chdir: "/home/{{ deploy_user }}/deploy/current/"
 
     - name: Rollbar deployment notification
-      rollbar_deployment:
+      community.general.rollbar_deployment:
         token: "{{ rollbar_token }}"
         environment: "{{ deploy_env }}"
         user: "{{ ansible_user }}"
@@ -148,7 +149,7 @@
     - name: Create link to socket for Nginx
       become: yes
       become_user: "{{ deploy_user }}"
-      file:
+      ansible.builtin.file:
         src: "/home/{{ deploy_user }}/deploy/current/venv/run"
         dest: "/home/{{ deploy_user }}/deploy/current/zapisy/socket"
         force: yes
@@ -156,20 +157,20 @@
 
     - name: Enable and run postfix service
       become: yes
-      service:
+      ansible.builtin.service:
         name: postfix
         enabled: yes
         state: restarted
 
     - name: Enable and run rqworker-default service
-      service:
+      ansible.builtin.service:
         name: rqworker-default
         enabled: yes
         state: restarted
       become: yes
 
     - name: Enable and run rqworker-notifications service
-      service:
+      ansible.builtin.service:
         name: rqworker-notifications
         enabled: yes
         state: restarted
@@ -177,27 +178,27 @@
 
     - name: Enable and run gunicorn service
       become: yes
-      service:
+      ansible.builtin.service:
         name: gunicorn
         enabled: yes
         state: restarted
 
     - name: Enable and run nginx service
       become: yes
-      service:
+      ansible.builtin.service:
         name: nginx
         enabled: yes
         state: restarted
 
     - name: Enable timer for backup service
-      service:
+      ansible.builtin.service:
         name: backup.timer
         enabled: yes
         state: started
       become: yes
 
     - name: Enable timer for django_cleanup service
-      service:
+      ansible.builtin.service:
         name: django_cleanup.timer
         enabled: yes
         state: started

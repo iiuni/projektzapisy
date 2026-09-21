@@ -13,14 +13,14 @@
       become: yes
 
     - name: Install yarn
-      apt:
+      ansible.builtin.apt:
         pkg:
         - yarnpkg
         update_cache: yes
       become: yes
 
     - name: Install python3
-      apt:
+      ansible.builtin.apt:
         pkg:
         - python3
         - python3-venv
@@ -28,12 +28,12 @@
       become: yes
 
     - name: Install redis
-      apt:
+      ansible.builtin.apt:
         name: redis-server
       become: yes
 
     - name: Add source command to .bashrc
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: ~/.bashrc
         line: "source ~/env3/bin/activate"
         regex: "^source ~/env3/bin/activate$"
@@ -44,7 +44,7 @@
     - name: Upgrade pip
       vars:
         ansible_python_interpreter: "{{ PYTHON }}"
-      pip:
+      ansible.builtin.pip:
         name: pip
         state: latest
         virtualenv: ~/env3
@@ -53,13 +53,13 @@
     - name: Set up virtualenv and get requirements
       vars:
         ansible_python_interpreter: "{{ PYTHON }}"
-      pip:
+      ansible.builtin.pip:
         virtualenv: ~/env3
         virtualenv_command: "{{ PYTHON }} -m venv"
         requirements: /vagrant/zapisy/requirements.development.txt
 
     - name: Create logs directory
-      file:
+      ansible.builtin.file:
         path: /vagrant/zapisy/logs
         state: directory
       become: yes

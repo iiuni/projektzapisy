@@ -131,6 +131,7 @@ def session(request, semester=None):
 def reservations(request):
     events = EventFilter(request.GET, queryset=Event.get_all_without_courses())
     qs = Paginator(events.qs, 10).get_page(request.GET.get('page', 1))
+    page_range = qs.paginator.get_elided_page_range(qs.number)
     title = 'Zarządzaj rezerwacjami'
     return TemplateResponse(request, 'schedule/reservations.html', locals())
 

@@ -3,7 +3,6 @@ import copy
 from typing import Dict, Iterable
 
 import apps.grade.poll.models
-import django.contrib.postgres.fields.jsonb
 from django.db import migrations, models
 import django.db.models.deletion
 
@@ -154,7 +153,7 @@ class Migration(migrations.Migration):
             name='Schema',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('questions', django.contrib.postgres.fields.jsonb.JSONField(default=dict)),
+                ('questions', models.JSONField(default=dict)),
                 ('type', models.SmallIntegerField(choices=[(apps.grade.poll.models.PollType(1), 'ankieta dla wykładu'), (apps.grade.poll.models.PollType(2), 'ankieta dla ćwiczeń'), (apps.grade.poll.models.PollType(3), 'ankieta dla pracowni'), (apps.grade.poll.models.PollType(5), 'ankieta dla ćwiczenio-pracowni'), (apps.grade.poll.models.PollType(6), 'ankieta dla seminarium'), (apps.grade.poll.models.PollType(7), 'ankieta dla lektoratu'), (apps.grade.poll.models.PollType(8), 'ankieta dla zajęć wf'), (apps.grade.poll.models.PollType(9), 'ankieta dla repetytorium'), (apps.grade.poll.models.PollType(10), 'ankieta dla projektu'), (apps.grade.poll.models.PollType(1000), 'ankieta dla egzaminu'), (apps.grade.poll.models.PollType(1001), 'ankieta ogólna')], verbose_name='Kategoria')),
             ],
             options={
@@ -166,7 +165,7 @@ class Migration(migrations.Migration):
             name='Submission',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('answers', django.contrib.postgres.fields.jsonb.JSONField(default=dict)),
+                ('answers', models.JSONField(default=dict)),
                 ('ticket', models.TextField(unique=True)),
                 ('submitted', models.BooleanField(default=False)),
                 ('created', models.DateTimeField(auto_now_add=True)),

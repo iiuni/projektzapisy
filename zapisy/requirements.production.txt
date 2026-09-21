@@ -1,5 +1,5 @@
 -r requirements.common.txt
 
-psycopg2==2.9.10
-slackclient==2.9.4
-dropbox==10.10.0
+psycopg2==2.9.13
+slack-sdk==3.44.1
+dropbox==12.2.1

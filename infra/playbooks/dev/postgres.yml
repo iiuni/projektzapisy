@@ -5,19 +5,19 @@
     APP_DB_USER: fereol
     APP_DB_PASS: fereolpass
     APP_DB_NAME: fereol
-    PG_VERSION: 12
+    PG_VERSION: 16
     PYTHON: "/home/vagrant/env3/bin/python3"
     ansible_python_interpreter: "/usr/bin/python3"
 
   tasks:
     - name: Ensure a locale exists
-      locale_gen:
+      community.general.locale_gen:
         name: pl_PL.UTF-8
         state: present
       become: yes
 
     - name: Install postgresql-{{ PG_VERSION }} and postgresql-contrib-{{ PG_VERSION }}
-      apt:
+      ansible.builtin.apt:
         pkg:
         - postgresql-{{ PG_VERSION }}
         - postgresql-contrib-{{ PG_VERSION }}
@@ -29,23 +29,23 @@
       become_user: postgres
       vars:
         ansible_python_interpreter: "{{ PYTHON }}"
-      postgresql_user:
+      community.postgresql.postgresql_user:
         name: "{{ APP_DB_USER }}"
         password: "{{ APP_DB_PASS }}"
         role_attr_flags: CREATEDB
 
-    - stat:
+    - ansible.builtin.stat:
         path: /etc/systemd/system/runserver.service
       register: service_status
 
     - name: Stop Django Runserver service
-      service:
+      ansible.builtin.service:
         name: runserver
         state: stopped
       become: yes
       when: service_status.stat.exists
 
-    - stat:
+    - ansible.builtin.stat:
         path: /vagrant/ii_zapisy_dump_dev.sql
       register: dumpsql
 
@@ -54,7 +54,7 @@
       become_user: postgres
       vars:
         ansible_python_interpreter: "{{ PYTHON }}"
-      postgresql_db:
+      community.postgresql.postgresql_db:
         name: "{{ APP_DB_NAME }}"
         state: absent
       when: dumpsql.stat.exists
@@ -64,7 +64,7 @@
       become_user: postgres
       vars:
         ansible_python_interpreter: "{{ PYTHON }}"
-      postgresql_db:
+      community.postgresql.postgresql_db:
         name: "{{ APP_DB_NAME }}"
         owner: "{{ APP_DB_USER }}"
         encoding: UTF-8
@@ -77,7 +77,7 @@
       become_user: postgres
       vars:
         ansible_python_interpreter: "{{ PYTHON }}"
-      postgresql_db:
+      community.postgresql.postgresql_db:
         name: "{{ APP_DB_NAME }}"
         state: restore
         target: "/vagrant/ii_zapisy_dump_dev.sql"
@@ -86,7 +86,7 @@
     - name: Apply migrates
       vars:
         ansible_python_interpreter: "{{ PYTHON }}"
-      django_manage:
+      community.general.django_manage:
         command: migrate
         app_path: "/vagrant/zapisy"
         virtualenv: "/home/vagrant/env3"

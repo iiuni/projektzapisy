@@ -1,4 +1,6 @@
 templates/
 compiled_assets/
+static/
+webpack_resources/webpack-stats.json
 .yarn/*
 .pnp*
