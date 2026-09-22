@@ -1,0 +1,14 @@
+[deploy]
+server1
+
+[deploy:vars]
+ansible_host=51.83.253.88
+ansible_port=22
+ansible_user=ubuntu
+ansible_ssh_private_key_file=/home/pwit/.ssh/id_rsa
+deploy_env=production
+deploy_user=zapisy
+deploy_version=operation-unthinkable
+deploy_server_name=51.83.253.88
+deploy_hostname=projektzapisy.test
+

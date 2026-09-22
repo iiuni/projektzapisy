@@ -38,7 +38,38 @@ schedulersync_slack_webhook_url: placeholder
 gdrive_service_type: placeholder
 gdrive_project_id: placeholder
 gdrive_private_key_id: placeholder
-gdrive_private_key: placeholder
+# Atrapa: poprawny formalnie klucz RSA nieprzypisany do żadnego konta Google.
+# Dzięki niej moduł przydziałów pokazuje komunikat o błędzie zamiast 500.
+# NIGDY nie wstawiać tu prawdziwego klucza — ten plik jest w repozytorium jawnie.
+gdrive_private_key: | 
+  -----BEGIN PRIVATE KEY-----
+  MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDP2JaognJJ/aBu
+  G4zD/6WlrFMjssNdEXFexdgtNDz75U9lA7UdBtKOqQ7rFnHXd0Qm5/jSGoZqsB1a
+  81yiwOCFYA4eci+mh0M4a1l/mGSjkUO7blY+lK50HriEkJWVh94aZCVscP0GRv2X
+  3BU2alitRnBlCy9ApgNVObDXwvBHdxsRuWCaC2HG7GHeETHjKeNOhlncM7ZFd9yJ
+  lqt8HKTAnbWfalGlOhiIDfyeJpkYwk+N3b7g+1r+4DSysNhzD47KMNwfeITSmWXO
+  H1Ml3ffy1Xqhpqr2ABtX21bzze97OI8pwrNzASDwlIEOCbu3Du/WPpgnN9NZw7qq
+  P3L3l+v5AgMBAAECggEAEutOr3EMUTLefxdP5WloXR/GA5pakSas0Kkmp9q48F7r
+  rrC7NDSyRt0ZqAmHfEr1b6su6YUTljOIwIYleQUgitN3BYt0Te7DDigrYeNvybnH
+  1hBRlmm3RYekWSDGFPHkpDdYdroENiWRINkeLzFX+BHQ2km9198kr4XMVJ+Aeqix
+  KDNx+/znMXITvVfLHm0h4AuYu/vTZWjBxkokanNqcGnOQjqM+bXCskvWRDlDcWyc
+  DKD55wNelJjO04WfdmNyGGK3rQ4Oql7mQb47B8DsGxarFZPkQRFFCKY07zqu8Rok
+  vB5a8tWRzMEbJQCtkSyCnFlP4G/Db3xF8hAZt4ZJXwKBgQD8/1Ukt7QgAxIZdwj6
+  OLMlm5rzf+FBFStLcMXkLyCKyUoNP5DxldphWCmkEwEuVxoXRtVGwxlexYtymVBR
+  0MMHOa09r5N/M8K7CABBagp/f4LhHh7Kyj3Mc+1tG4L0ATnvAcHBhFpxGNCp+tP7
+  Lt6M9h5E+MfalvjDspBqiPegPwKBgQDSUBM/k9tmp9cObgwJ0y2KC4P3bQ5GBEjp
+  SDIN7qWXuzHQJ1cfzrb2auWAeMykuXVY3Cf3YH6CB4jsOdfeabM42NpNJbrvlmc8
+  pucDOsmVwodwq85YwmfSJP9KMDIryOijtPLuUcJGQw12Yu3j/B3FY6jCKpG1CGkw
+  f/8Icr7lxwKBgDPtCAGoPq0PVEiruMj6mDJQ1KXDimz8Nk2ekM87qPczRyKe+FXN
+  RuwR10IYsHZdZDqAzEdgxbVA4FUeCHEyYsT53oe5oJFMA1y10K+cXxk6B5fCwdkn
+  VzW+WW26Zs9D7SsT9juMua9aw4EPvTBht0XBQgcv9Hz13Yr0/FURVZmrAoGAdx4R
+  eN4G00LW5H5h5SKt1VUmXnpvLir5HN/eMdPsCF9nHE1b5FERgcoTyMsipV3BYB35
+  qPwHSyB3ZcxxPrDBaL4yDqYDFfYq7MhfaY3fZSozyhYVHmKlqPl5eoyHrhLx6N7x
+  BRhbn64Uruvjb1B5kDYc/DReKJnl8ilcym0rQDsCgYBn7D51Xb5RquZ1azDIIMGQ
+  euVYASg/3qAIW3rpa7sT26kyos1Ue1ViJUisDOonGtKmczjDlsbY+/mXbI3jPu1d
+  l19plq3Hq5t6cHKziNQcJh2O70QOwB2ItVmuVP7G2ELw6H5rZd44Q7UxzSH1J+fg
+  G+psWg+uPdakVi8llGF8Uw==
+  -----END PRIVATE KEY-----
 gdrive_client_email: placeholder
 gdrive_client_id: placeholder
 gdrive_client_cert_url: placeholder

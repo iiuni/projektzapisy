@@ -130,7 +130,10 @@
         clean: true
         keep_releases: 2
 
+  
     - name: Get revision
+      become: yes
+      become_user: "{{ deploy_user }}"
       ansible.builtin.command: git rev-parse HEAD
       changed_when: false
       register: git_rev
