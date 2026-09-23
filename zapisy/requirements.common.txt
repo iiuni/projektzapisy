@@ -22,7 +22,7 @@ rollbar==0.16.3
 newrelic
 gunicorn==20.1.0
 python-dateutil==2.9.0.post0
-python-memcached==1.62
+pymemcache==3.5.2
 more-itertools==8.14.0
 # PyYAML is used for fixtures.
 pyyaml==6.0.3
