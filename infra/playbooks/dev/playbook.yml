@@ -35,6 +35,12 @@
       apt:
         name: redis-server
       become: yes
+    
+    - name: Install memcached
+      apt:
+        pkg:
+          - memcached
+      become: yes
 
     - name: Add source command to .bashrc
       lineinfile:

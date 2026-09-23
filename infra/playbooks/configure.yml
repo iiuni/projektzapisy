@@ -25,6 +25,7 @@
         - yarnpkg
         - git
         - redis-server
+        - memcached
         - nginx
         - postfix
         - p7zip-full
