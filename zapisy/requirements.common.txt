@@ -10,7 +10,7 @@ redis==3.5.3
 rq==1.16.2
 django-rq==2.8.1
 django-test-without-migrations==0.6
-django-webpack-loader==0.7.0
+django-webpack-loader==1.4.0
 djangorestframework==3.15.1
 django-pagedown==2.2.1
 
