@@ -49,10 +49,7 @@
       vars:
         ansible_python_interpreter: "{{ PYTHON }}"
       pip:
-        name: 
-          - pip
-          - wheel
-          - setuptools 
+        name: pip
         state: latest
         virtualenv: ~/env3
         virtualenv_command: "{{ PYTHON }} -m venv"
