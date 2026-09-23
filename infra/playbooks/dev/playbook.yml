@@ -6,6 +6,10 @@
     ansible_python_interpreter: "/usr/bin/python3"
 
   tasks:
+    - name: Ensure /home/vagrant has correct permissions
+      ansible.builtin.file:
+        path: /home/vagrant
+        mode: "775"
 
     # https://github.com/ansible/ansible/issues/25414#issuecomment-440549135
     - name: Wait for any possibly running unattended upgrade to finish

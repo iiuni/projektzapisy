@@ -5,9 +5,9 @@
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
-Vagrant.configure(2) do |config|
+Vagrant.configure("2") do |config|
   config.ssh.shell = "bash"
-  config.vm.box = "ubuntu/focal64"
+  config.vm.box = "ubuntu/jammy64"
 
   # Installs ansible as it is not yet provided for focal.
   # https://github.com/ansible/ansible/issues/69203
@@ -17,6 +17,7 @@ Vagrant.configure(2) do |config|
   SHELL
   config.vm.provision "ansible_local" do |ansible|
     ansible.playbook = "infra/playbooks/dev/playbook.yml"
+    ansible.compatibility_mode = "2.0"
   end
   config.vm.network :forwarded_port, guest: 80, host: 8001
   config.vm.network :forwarded_port, guest: 8000, host: 8000
