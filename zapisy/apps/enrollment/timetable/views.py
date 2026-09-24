@@ -2,7 +2,7 @@
 import collections
 import csv
 import json
-from typing import List, Optional
+from typing import List, Optional, Any, Dict
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
@@ -11,6 +11,8 @@ from django.http import JsonResponse
 from django.shortcuts import Http404, HttpResponse, get_object_or_404, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
+from django.template import Template
+from django.template.loader import get_template
 
 from apps.enrollment.courses.models import CourseInstance, Group, Semester
 from apps.enrollment.courses.templatetags.course_types import decode_class_type_singular
@@ -19,6 +21,7 @@ from apps.enrollment.timetable.models import Pin
 from apps.schedule.models.term import Term as SchTerm
 from apps.users.decorators import student_required
 from apps.users.models import Employee, Student
+from apps.common.json_response import render_templates_json
 
 
 def build_group_list(groups: List[Group]):
@@ -118,9 +121,26 @@ def employee_timetable_data(employee: Employee, semester: Optional[Semester]):
     return data
 
 
+def render_timetable_json(context: Dict[str, Any], templates: Dict[str, Template]) -> JsonResponse:
+    """Renders timetable related HTML elements from django templates.
+
+    Minimum context contents are 'groups_dicts' (as return value of build_group_list)
+    and 'semester' (as Semester object or string of semester name).
+    """
+    timetable_elems: Dict[str, str]
+    timetable_elems = {
+        'timetable-data-div': '{{groups_dicts|json_script:"timetable-data"}}',
+        'semester-dropdown-title': '<strong>Semestr {{ semester }}</strong>',
+    }
+    return render_templates_json(context, templates, timetable_elems)
+
+
 @login_required
-def my_timetable(request, semester_id: Optional[int] = None):
-    """Shows the student/employee his own timetable page."""
+def my_timetable(request, semester_id: Optional[int] = None, semester_data_only: bool = False):
+    """Shows the student/employee his own timetable page.
+
+    If sem_fetch is True sends only necessary data to switch displayed semester.
+    """
     # Counter will add elements key-wise. Numbers will be added, lists will be
     # extended.
     semester: Optional[Semester]
@@ -136,6 +156,13 @@ def my_timetable(request, semester_id: Optional[int] = None):
         data.update(employee_timetable_data(request.user.employee, semester))
     data['semester'] = semester
     data['all_semesters'] = all_semesters
+
+    if semester_data_only:
+        if request.user.student:
+            other_templates = {'courses-table': get_template('timetable/courses_table.html')}
+        else:
+            other_templates = {}
+        return render_timetable_json(data, other_templates)
 
     return render(request, 'timetable/timetable.html', data)
 
