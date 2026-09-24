@@ -19,8 +19,6 @@ prompt-toolkit==3.0.52
 ipython==7.34.0
 pycryptodome==3.23.0
 rollbar==0.16.3
-newrelic
-gunicorn==20.1.0
 python-dateutil==2.9.0.post0
 pymemcache==3.5.2
 more-itertools==8.14.0
