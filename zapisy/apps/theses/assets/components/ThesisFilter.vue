@@ -4,6 +4,7 @@ import Vue from "vue";
 import TextFilter from "./filters/TextFilter.vue";
 import SelectFilter from "./filters/SelectFilter.vue";
 import CheckFilter from "./filters/CheckFilter.vue";
+import { ThesisInfo } from "../store/theses.js";
 
 export default Vue.extend({
   components: {
@@ -29,6 +30,14 @@ export default Vue.extend({
         ["obroniona", "Obroniona"],
       ],
     };
+  },
+  methods: {
+    isAvailable: function (thesis: ThesisInfo) {
+      return thesis.is_available == true;
+    },
+    isMine: function (thesis: ThesisInfo) {
+      return thesis.is_mine == true;
+    },
   },
 });
 </script>
@@ -65,14 +74,14 @@ export default Vue.extend({
         <div class="col-lg-4">
           <CheckFilter
             filterKey="available-filter"
-            property="is_available"
+            :predicate="isAvailable"
             label="Pokaż tylko niezarezerwowane prace"
           />
         </div>
         <div class="col-lg-4">
           <CheckFilter
             filterKey="mine-filter"
-            property="is_mine"
+            :predicate="isMine"
             label="Pokaż tylko moje"
           />
         </div>
