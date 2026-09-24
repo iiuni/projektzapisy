@@ -25,7 +25,7 @@ class RollbarOnly404Limited:
     """
     def __init__(self, get_response):
         self.get_response = get_response
-        self.rollbar_404 = rollbar.contrib.django.middleware.RollbarNotifierMiddlewareOnly404()
+        self.rollbar_404 = rollbar.contrib.django.middleware.RollbarNotifierMiddlewareOnly404(get_response)
         self.redis_client = redis.Redis()
         self.logger = logging.getLogger(__name__)
 
