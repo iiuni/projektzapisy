@@ -1,3 +1,5 @@
+{% load l10n %}
+
 <table class="table border text-break">
     <tbody>
         <tr>
@@ -25,7 +27,7 @@
                         {{ event.author.get_full_name }}
                 </td>
                 <th width="12%" class="text-light bg-info">Data</th>
-                <td width="20%">{{ event.created }}</td>
+                <td width="20%">{{ event.created|unlocalize }}</td>
             </tr>
         {% endif %}
         {% if event.description %}
@@ -42,8 +44,8 @@
                 <table class="table">
                     {% for term in event.term_set.all %}
                     <tr class="text-center">
-                        <td>{{ term.start|time }} - {{ term.end|time }}</td>
-                        <td>{{ term.day|date:"j E Y" }}</td>
+                        <td>{{ term.start|unlocalize }} - {{ term.end|unlocalize }}</td>
+                        <td>{{ term.day|unlocalize }}</td>
                         <td>{% if term.room %}<a href="{{ term.room.get_absolute_url }}">Sala {{ term.room.number }}</a>{% else %}{{ term.place }}{% endif %}</td>
                     </tr>
                     {% endfor %}
