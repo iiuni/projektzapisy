@@ -32,12 +32,14 @@
                 {{ event.author.get_full_name }}
             </td>
         </tr>
-        <tr>
-            <th class="text-light bg-info">Opis</th>
-            <td colspan="3">
-                <p class="long">{{ event.description }}</p>
-            </td>
-        </tr>
+        {% if event.description %}
+            <tr>
+                <th class="text-light bg-info">Opis</th>
+                <td colspan="3">
+                    <p class="long">{{ event.description }}</p>
+                </td>
+            </tr>
+        {% endif %}
         <tr>
             <th class="text-light bg-info">Lokalizacja</th>
             <td colspan="3">
