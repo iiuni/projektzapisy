@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load filters %}
+{% load l10n %}
 {% load crispy_forms_tags %}
 
 {% block main-subtitle %}System prac dyplomowych{% endblock %}
@@ -105,11 +106,11 @@
         </tr>
         <tr>
             <th scope="row">Data dodania</th>
-            <td>{{ thesis.added }}</td>
+            <td>{{ thesis.added|unlocalize }}</td>
         </tr>
         <tr>
             <th scope="row">Data aktualizacji</th>
-            <td>{{ thesis.modified }}</td>
+            <td>{{ thesis.modified|unlocalize }}</td>
         </tr>
     </tbody>
     </table>
