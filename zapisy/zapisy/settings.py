@@ -30,7 +30,8 @@ EMAIL_HOST_PASSWORD = env.str('EMAIL_HOST_PASSWORD', default='')
 EMAIL_PORT = env.int('EMAIL_PORT', default=25)
 SERVER_EMAIL = env.str('SERVER_EMAIL', default='root@localhost')
 EMAIL_THROTTLE_SECONDS = env.int('EMAIL_THROTTLE_SECONDS', default=0)
-
+SITE_NAME = env.str("SITE_NAME", default="")
+SITE_DOMAIN = env.str("SITE_DOMAIN", default="")
 # django-environ doesn't support nested arrays, but decoding json objects works fine
 ARRAY_VALS = env.json('ARRAY_VALS', {})
 ADMINS = ARRAY_VALS['ADMINS'] if ARRAY_VALS else []
@@ -214,6 +215,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
 
+    'zapisy',
     'apps.users',
 
     'django.contrib.messages',
@@ -232,6 +234,7 @@ INSTALLED_APPS = (
 
     'apps.common',
     'apps.schedule',
+    'apps.admin_tools',
     # 'debug_toolbar',
     'apps.grade.poll',
     'apps.grade.ticket_create',
