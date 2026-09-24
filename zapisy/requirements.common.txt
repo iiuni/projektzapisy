@@ -1,5 +1,6 @@
-Django==3.2.25
-django-bootstrap-pagination==1.7.1
+Django==4.0.10
+#django-bootstrap-pagination==1.7.1
+django-bootstrap5==23.4
 django-cas-ng==4.3.0
 django-crispy-forms==1.14.0
 django-environ==0.9.0

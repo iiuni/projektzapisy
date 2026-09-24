@@ -138,6 +138,7 @@ LOGGING = {
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
 TIME_ZONE = 'Europe/Warsaw'
+USE_TZ = False
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -242,7 +243,7 @@ INSTALLED_APPS = (
     'apps.effects',
     'django_extensions',
     'django_filters',
-    'bootstrap_pagination',
+    'django_bootstrap5',
     'crispy_forms',
     'apps.notifications',
     'django_cas_ng',
@@ -258,6 +259,7 @@ AUTHENTICATION_BACKENDS = (
 
 TIME_FORMAT = "H:i"
 DATETIME_FORMAT = "j N Y, H:i"
+DATE_FORMAT = "j N Y"
 
 CAS_SERVER_URL = 'https://login.usos.uwr.edu.pl/cas/'
 CAS_CREATE_USER = False
