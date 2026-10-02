@@ -3,3 +3,5 @@
 psycopg2==2.9.13
 slackclient==2.9.4
 dropbox==10.10.0
+gunicorn==26.1.0
+newrelic
