@@ -1,69 +1,168 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import $ from "jquery";
-import { min, max } from "lodash";
 import axios from "axios";
 import { TermDisplay, Classroom, isFree, calculateLength } from "../terms";
 import ClassroomField from "./ClassroomField.vue";
 
+type ReservationTerm = {
+  day: string;
+  start: string;
+  end: string;
+  roomId: number | null;
+  place: string;
+  deleted?: boolean;
+};
+
+type OccupiedInterval = {
+  begin: string;
+  end: string;
+};
+
+type ClassroomApiItem = {
+  id: number;
+  number: string;
+  type: string;
+  capacity: number;
+  occupied: OccupiedInterval[];
+};
+
 const ClassroomPickerDefinition = Vue.extend({
   components: {
     ClassroomField,
+  },
+  props: {
+    activeTerm: {
+      type: Object as () => ReservationTerm | null,
+      default: null,
+    },
+    terms: {
+      type: Array as () => ReservationTerm[],
+      default() {
+        return [];
+      },
+    },
+    activeTermIndex: {
+      type: Number,
+      default: -1,
+    },
   },
   data: () => {
     return {
       showOccupied: false,
     };
   },
+  watch: {
+    activeTerm: {
+      handler: "onActiveTermChanged",
+      immediate: true,
+      deep: true,
+    },
+  },
 });
 
 @Component
 export default class ClassroomPicker extends ClassroomPickerDefinition {
+  activeTerm!: ReservationTerm | null;
+  terms!: ReservationTerm[];
+  activeTermIndex!: number;
+  showOccupied!: boolean;
+
   classrooms: Classroom[] = [];
   unoccupiedClassrooms: Classroom[] = [];
   reservationLayer: TermDisplay[] = [];
 
-  // Attaches handlers to change of active term form.
-  mounted() {
-    let self = this;
-
-    // Sets handlers to change of time and date for currently
-    // active term.
-    let f = (event: Event) => {
-      self.onChangedTime();
-      self.onChangedDate();
-
-      $(".active-term").find(".form-time").on("change", self.onChangedTime);
-
-      $(".active-term").find(".form-day").on("change", self.onChangedDate);
-    };
-
-    // Vanilla JS give us know when change active term
-    document.addEventListener("refresh-classroom-picker", f);
+  get displayedClassrooms(): Classroom[] {
+    return this.showOccupied ? this.classrooms : this.unoccupiedClassrooms;
   }
 
-  getUnoccupied() {
-    let begin = $(".active-term").find(".form-start").val() as string;
-    let end = $(".active-term").find(".form-end").val() as string;
+  clearState() {
+    this.classrooms = [];
+    this.unoccupiedClassrooms = [];
+    this.reservationLayer = [];
+  }
+
+  getLocalOccupiedForRoom(roomId: number, day: string): OccupiedInterval[] {
+    // Include other unsaved rows from the same editor so a room picked in one
+    // term immediately blocks overlapping ranges in the remaining terms.
+    return this.terms
+      .filter((term, index) => {
+        return (
+          index !== this.activeTermIndex &&
+          !term.deleted &&
+          term.roomId === roomId &&
+          term.day === day &&
+          Boolean(term.start) &&
+          Boolean(term.end)
+        );
+      })
+      .map((term) => ({
+        begin: term.start,
+        end: term.end,
+      }));
+  }
+
+  mergeOccupied(occupied: OccupiedInterval[]): OccupiedInterval[] {
+    const sortedOccupied = [...occupied].sort((left, right) =>
+      left.begin.localeCompare(right.begin)
+    );
+    const mergedOccupied: OccupiedInterval[] = [];
+
+    for (const term of sortedOccupied) {
+      if (
+        mergedOccupied.length > 0 &&
+        term.begin <= mergedOccupied[mergedOccupied.length - 1].end
+      ) {
+        mergedOccupied[mergedOccupied.length - 1].end =
+          term.end > mergedOccupied[mergedOccupied.length - 1].end
+            ? term.end
+            : mergedOccupied[mergedOccupied.length - 1].end;
+        continue;
+      }
+
+      mergedOccupied.push({ ...term });
+    }
+
+    return mergedOccupied;
+  }
+
+  onActiveTermChanged() {
+    // Any edit of the currently selected row (date, time, chosen room) changes
+    // which classrooms should be shown, so we rebuild the picker from scratch.
+    this.refreshClassrooms();
+  }
+
+  updateUnoccupiedClassrooms(begin: string, end: string) {
     this.unoccupiedClassrooms = this.classrooms.filter((item) => {
       return isFree(item.rawOccupied, begin, end);
     });
   }
 
-  onChangedTime() {
-    let start = $(".active-term").find(".form-start").val() as string;
-    let end = $(".active-term").find(".form-end").val() as string;
-
-    if (start > end || end < "08:00" || start > "22:00") {
+  refreshReservationLayer() {
+    if (!this.activeTerm) {
       this.reservationLayer = [];
       return;
     }
 
-    start = max(["08:00", start]) as string;
-    end = min(["22:00", end]) as string;
+    let start = this.activeTerm.start;
+    let end = this.activeTerm.end;
 
-    this.getUnoccupied();
+    if (!start || !end || start > end || end < "08:00" || start > "22:00") {
+      // Until the row contains a sensible interval, we keep the blue overlay
+      // hidden and show all rooms from the fetched list instead of filtering.
+      this.reservationLayer = [];
+      this.unoccupiedClassrooms = [...this.classrooms];
+      return;
+    }
+
+    if (start < "08:00") {
+      start = "08:00";
+    }
+    if (end > "22:00") {
+      end = "22:00";
+    }
+
+    this.updateUnoccupiedClassrooms(start, end);
 
     this.reservationLayer = [];
     this.reservationLayer.push({
@@ -80,56 +179,78 @@ export default class ClassroomPicker extends ClassroomPickerDefinition {
     });
   }
 
-  onChangedDate() {
-    var self = this;
-    var date = $(".active-term").find(".form-day").val();
-
-    if (date === "") {
-      self.classrooms = [];
-      self.unoccupiedClassrooms = [];
+  refreshClassrooms() {
+    if (!this.activeTerm) {
+      this.clearState();
       return;
     }
 
-    axios.get("/classrooms/get_terms/" + date + "/").then((response) => {
-      self.classrooms = [];
-      for (let key in response.data) {
-        let item = response.data[key];
-        let termsLayer = [];
+    const date = this.activeTerm.day;
 
-        item.occupied.push({
-          begin: "22:00",
-        });
-        let lastFree = "08:00";
+    if (date === "") {
+      this.clearState();
+      return;
+    }
 
-        for (const occ of item.occupied) {
-          const emptyWidth = calculateLength(lastFree, occ.begin);
-          termsLayer.push({
-            width: emptyWidth,
-            occupied: false,
-          });
-          if (!occ.end) {
-            // We reached the last, dummy event.
-            break;
+    const encodedDate = encodeURIComponent(date);
+
+    axios
+      .get<Record<string, ClassroomApiItem>>(
+        "/classrooms/get_terms/" + encodedDate + "/"
+      )
+      .then((response) => {
+        // We fetch availability only for the active day; the selected time range
+        // is applied locally afterwards so changing hours does not require
+        // another API format or any server-side overlap calculation here.
+        this.classrooms = [];
+        for (const item of Object.values(response.data)) {
+          const termsLayer: TermDisplay[] = [];
+          // The API only knows about persisted reservations, so we merge it with
+          // local editor state before drawing the occupancy bar and availability.
+          const mergedOccupied = this.mergeOccupied([
+            ...item.occupied,
+            ...this.getLocalOccupiedForRoom(item.id, date),
+          ]);
+
+          let lastFree = "08:00";
+
+          for (const occ of mergedOccupied) {
+            const emptyWidth = calculateLength(lastFree, occ.begin);
+            termsLayer.push({
+              width: emptyWidth,
+              occupied: false,
+            });
+
+            const width = calculateLength(occ.begin, occ.end);
+            termsLayer.push({
+              width: width,
+              occupied: true,
+            });
+            lastFree = occ.end;
           }
-          let width = calculateLength(occ.begin, occ.end);
-          termsLayer.push({
-            width: width,
-            occupied: true,
-          });
-          lastFree = occ.end;
-        }
 
-        self.classrooms.push({
-          label: item.number,
-          type: item.type,
-          id: item.id,
-          capacity: item.capacity,
-          termsLayer: termsLayer,
-          rawOccupied: item.occupied,
-        });
-      }
-      self.getUnoccupied();
-    });
+          if (lastFree < "22:00") {
+            termsLayer.push({
+              width: calculateLength(lastFree, "22:00"),
+              occupied: false,
+            });
+          }
+
+          this.classrooms.push({
+            label: item.number,
+            type: item.type,
+            id: item.id,
+            capacity: item.capacity,
+            termsLayer: termsLayer,
+            rawOccupied: mergedOccupied,
+          });
+        }
+        this.refreshReservationLayer();
+      });
+  }
+
+  onSelectRoom(payload: { roomId: number; label: string }) {
+    this.$emit("select-room", payload);
   }
 }
 </script>
@@ -137,21 +258,17 @@ export default class ClassroomPicker extends ClassroomPickerDefinition {
 <template>
   <div>
     <h3>Filtruj sale</h3>
-    <div class="input-group">
-      <div class="custom-control custom-checkbox">
-        <input
-          type="checkbox"
-          class="custom-control-input"
-          id="showOccupied"
-          v-model="showOccupied"
-        />
-        <label class="custom-control-label" for="showOccupied"
-          >Pokaż zajęte</label
-        >
-      </div>
+    <div class="form-check mb-3">
+      <input
+        type="checkbox"
+        class="form-check-input"
+        id="showOccupied"
+        v-model="showOccupied"
+      />
+      <label class="form-check-label" for="showOccupied">Pokaż zajęte</label>
     </div>
     <ClassroomField
-      v-for="item in showOccupied ? this.classrooms : this.unoccupiedClassrooms"
+      v-for="item in displayedClassrooms"
       :key="item.id"
       :label="item.label"
       :capacity="item.capacity"
@@ -159,6 +276,7 @@ export default class ClassroomPicker extends ClassroomPickerDefinition {
       :type="item.type"
       :termsLayer="item.termsLayer"
       :reservationLayer="reservationLayer"
+      @select-room="onSelectRoom"
     />
   </div>
 </template>

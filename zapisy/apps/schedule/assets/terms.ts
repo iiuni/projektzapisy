@@ -14,6 +14,16 @@ export interface TermDisplay {
   occupied: boolean;
 }
 
+export type Term = {
+  id: number | null;
+  day: string;
+  start: string;
+  end: string;
+  roomId: number | null;
+  place: string;
+  deleted: boolean;
+};
+
 export interface Classroom {
   label: String;
   type: String;

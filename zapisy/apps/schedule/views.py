@@ -32,6 +32,38 @@ from .fullcalendar import FullCalendarView
 from .models.message import EventModerationMessage
 
 
+def build_reservation_editor_data(formset):
+    terms = []
+    for form in formset.forms:
+        term_id = form['id'].value()
+        day = form['day'].value() or ''
+        start = form['start'].value() or ''
+        end = form['end'].value() or ''
+        room_id = form['room'].value()
+        place = form['place'].value() or ''
+        deleted = bool(form['DELETE'].value())
+
+        if not any([term_id, day, start, end, room_id, place]):
+            continue
+
+        terms.append({
+            'id': int(term_id) if term_id else None,
+            'day': day,
+            'start': start,
+            'end': end,
+            'roomId': int(room_id) if room_id else None,
+            'place': place,
+            'deleted': deleted,
+        })
+
+    return {
+        'terms': terms,
+        'initialFormsCount': formset.initial_form_count(),
+        'minNumForms': formset.min_num,
+        'maxNumForms': formset.max_num,
+    }
+
+
 @login_required
 def classrooms(request):
 
@@ -70,9 +102,16 @@ def new_reservation(request, event_id=None):
     else:
         form = EventForm(request.user)
         formset = NewTermFormSet(form_kwargs={'user': request.user})
+
+    reservation_editor_data = build_reservation_editor_data(formset)
     return render(request,
                   'schedule/reservation.html',
-                  {'form': form, 'formset': formset, 'extra_terms_number': ExtraTermsNumber})
+                  {
+                      'form': form,
+                      'formset': formset,
+                      'extra_terms_number': ExtraTermsNumber,
+                      'reservation_editor_data': reservation_editor_data,
+                  })
 
 
 @login_required
@@ -108,7 +147,8 @@ def edit_reservation(request, event_id=None):
                             {'is_edit': is_edit,
                              'form': form,
                              'formset': formset,
-                             'extra_terms_number': ExtraTermsNumber})
+                             'extra_terms_number': ExtraTermsNumber,
+                             'reservation_editor_data': build_reservation_editor_data(formset)})
 
 
 def session(request, semester=None):
