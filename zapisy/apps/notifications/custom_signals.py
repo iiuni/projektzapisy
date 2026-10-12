@@ -22,3 +22,9 @@ event_decision = django.dispatch.Signal()
 # Signal senders must provide an argument:
 #   instance: apps.theses.models.Thesis
 thesis_accepted = django.dispatch.Signal()
+# Signal senders must provide an argument:
+#   instance: apps.enrollment.discharges.models.DirectorDischarge
+discharge_approved = django.dispatch.Signal()
+# Signal senders must provide an argument:
+#   instance: apps.enrollment.discharges.models.DirectorDischarge
+discharge_rejected = django.dispatch.Signal()

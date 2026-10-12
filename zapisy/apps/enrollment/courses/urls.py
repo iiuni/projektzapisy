@@ -13,6 +13,7 @@ from apps.enrollment.courses import views
 urlpatterns = [
     path('', views.courses_list, name='course-list'),
     path('<slug:slug>', views.course_view, name='course-page'),
+    path('<slug:slug>/discharge', views.discharge, name='course-discharge'),
     path('<slug:course_slug>/list', views.course_list_view, name='course-student-list'),
     path('<slug:course_slug>/<int:class_type>/list', views.course_list_view, name='class-type-student-list'),
     path('semester/<int:semester_id>', views.courses_list, name='courses-semester'),

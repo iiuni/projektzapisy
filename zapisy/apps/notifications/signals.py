@@ -11,7 +11,8 @@ from apps.enrollment.courses.views import course_view
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.news.models import News, PriorityChoices
 from apps.notifications.api import notify_selected_users, notify_user
-from apps.notifications.custom_signals import (student_not_pulled, student_pulled, teacher_changed,
+from apps.notifications.custom_signals import (discharge_approved, discharge_rejected,
+                                               student_not_pulled, student_pulled, teacher_changed,
                                                thesis_voting_activated, event_decision, thesis_accepted)
 from apps.notifications.datatypes import Notification
 from apps.notifications.templates import NotificationType
@@ -198,6 +199,47 @@ def notify_event_author_about_decision(sender: None, **kwargs) -> None:
                 'title': event.title,
                 'status': status,
             }, target))
+
+
+@receiver(discharge_approved)
+def notify_about_discharge_approval(sender, **kwargs) -> None:
+    discharge = kwargs['instance']
+    course_name = discharge.course.name
+    student_name = discharge.student.user.get_full_name()
+    target = reverse(course_view, args=[discharge.course.slug])
+    auto_approved = discharge.decided_by is None
+
+    # Notify teachers of all groups in the course
+    teachers = User.objects.filter(
+        employee__group__course=discharge.course,
+        employee__group__isnull=False,
+    ).distinct()
+    notify_selected_users(
+        teachers,
+        Notification(get_id(), get_time(), NotificationType.DISCHARGE_APPROVED_TEACHER, {
+            'course_name': course_name,
+            'student_name': student_name,
+        }, target))
+
+    # Notify student only for manual approvals (not auto-approved via ACCEPT policy)
+    if not auto_approved:
+        notify_user(
+            discharge.student.user,
+            Notification(get_id(), get_time(), NotificationType.DISCHARGE_APPROVED_STUDENT, {
+                'course_name': course_name,
+            }, target))
+
+
+@receiver(discharge_rejected)
+def notify_about_discharge_rejection(sender, **kwargs) -> None:
+    discharge = kwargs['instance']
+    target = reverse(course_view, args=[discharge.course.slug])
+
+    notify_user(
+        discharge.student.user,
+        Notification(get_id(), get_time(), NotificationType.DISCHARGE_REJECTED_STUDENT, {
+            'course_name': discharge.course.name,
+        }, target))
 
 
 @receiver(thesis_accepted, sender=Vote)

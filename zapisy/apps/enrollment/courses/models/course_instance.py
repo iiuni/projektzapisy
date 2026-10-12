@@ -10,6 +10,12 @@ from .course_information import CourseInformation
 from .semester import Semester
 
 
+class DischargePolicy(models.IntegerChoices):
+    ACCEPT = 0, 'Automatyczny'
+    REJECT = 1, 'Zabroniony'
+    MANUAL = 2, 'Ręczny'
+
+
 class CourseInstance(CourseInformation):
     """Stores a course instance taught in a semester."""
     offer = models.ForeignKey(
@@ -19,6 +25,12 @@ class CourseInstance(CourseInformation):
     # Course may have an individual enrollment period.
     records_start = models.DateTimeField("Początek zapisów", null=True, blank=True)
     records_end = models.DateTimeField("Koniec zapisów", null=True, blank=True)
+
+    director_discharge_policy = models.IntegerField(
+        choices=DischargePolicy.choices,
+        default=DischargePolicy.ACCEPT,
+        verbose_name='Polityka wypisów dyrektorskich',
+    )
 
     class Meta:
         verbose_name = "Instancja przedmiotu"
