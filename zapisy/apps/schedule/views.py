@@ -334,7 +334,7 @@ class EventsTermsAjaxView(FullCalendarView):
 
     def get_queryset(self):
         queryset = super(EventsTermsAjaxView, self).get_queryset()
-        queryset = queryset.filter(event__type='2', event__visible=True)
+        queryset = queryset.filter(event__type='2', event__visible=True, event__status=Event.STATUS_ACCEPTED)
         return queryset
 
 
