@@ -36,6 +36,9 @@ const AssetDefs = {
   "timetable-prototype-legend-stylesheet": [
     path.resolve("apps/enrollment/timetable/assets/prototype-legend.scss"),
   ],
+  "timetable-semester-fetch": [
+    path.resolve("apps/enrollment/timetable/assets/semester-fetch.ts"),
+  ],
 
   // Poll app
 
