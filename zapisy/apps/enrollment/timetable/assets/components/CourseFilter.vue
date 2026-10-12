@@ -11,6 +11,7 @@ import LabelsFilter from "./filters/LabelsFilter.vue";
 import MultiSelectFilter from "./filters/MultiSelectFilter.vue";
 import CheckFilter from "./filters/CheckFilter.vue";
 import { FilterDataJSON, MultiselectFilterData } from "./../models";
+import { CourseInfo } from "../store/courses";
 
 export default Vue.extend({
   components: {
@@ -65,6 +66,9 @@ export default Vue.extend({
   },
   methods: {
     ...mapMutations("filters", ["clearFilters"]),
+    firstYearRecommended: function (course: CourseInfo) {
+      return course.recommendedForFirstYear == true;
+    },
   },
 });
 </script>
@@ -121,8 +125,8 @@ export default Vue.extend({
           <hr />
           <CheckFilter
             filterKey="freshmen-filter"
-            property="recommendedForFirstYear"
             label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
+            :predicate="firstYearRecommended"
             ref="freshmen-filter"
           />
           <hr />
