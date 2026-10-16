@@ -1,4 +1,4 @@
-Django==4.0.10
+Django==4.1.13
 django-bootstrap5==23.4
 django-cas-ng==4.3.0
 django-crispy-forms==1.14.0
