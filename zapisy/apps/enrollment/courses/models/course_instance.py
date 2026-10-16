@@ -28,6 +28,9 @@ class CourseInstance(CourseInformation):
         """Overrides standard Django `save` function."""
         if not self.slug:
             self.slug = slugify(f'{self.name} {self.semester}')
+            update_fields = kwargs.get('update_fields')
+            if update_fields is not None:
+                kwargs['update_fields'] = {'slug'}.union(update_fields)
         super().save(*args, **kwargs)
 
     def __str__(self):

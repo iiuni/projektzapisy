@@ -80,10 +80,12 @@ class CourseInformation(models.Model):
 
     def save(self, *args, **kwargs):
         """Overrides standard Django `save` function."""
-        super().save(*args, **kwargs)
         if not self.slug:
             self.slug = slugify(f'{self.pk} {self.name}')
-            self.save()
+            update_fields = kwargs.get('update_fields')
+            if update_fields is not None:
+                kwargs['update_fields'] = {'slug'}.union(update_fields)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
