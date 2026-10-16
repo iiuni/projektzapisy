@@ -80,12 +80,15 @@ class CourseInformation(models.Model):
 
     def save(self, *args, **kwargs):
         """Overrides standard Django `save` function."""
+        super().save(*args, **kwargs)
+        # For newly created objects, the slug needs to be set after first save
+        # so that self.pk is set, and thus the second save is warranted.
         if not self.slug:
             self.slug = slugify(f'{self.pk} {self.name}')
             update_fields = kwargs.get('update_fields')
-            if update_fields is not None:
+            if update_fields is not None: # otherwise all fields are updated anyway
                 kwargs['update_fields'] = {'slug'}.union(update_fields)
-        super().save(*args, **kwargs)
+            self.save()
 
     def __str__(self):
         return self.name
