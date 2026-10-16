@@ -86,7 +86,7 @@ class CourseInformation(models.Model):
         if not self.slug:
             self.slug = slugify(f'{self.pk} {self.name}')
             update_fields = kwargs.get('update_fields')
-            if update_fields is not None: # otherwise all fields are updated anyway
+            if update_fields is not None:        # otherwise all fields are updated anyway
                 kwargs['update_fields'] = {'slug'}.union(update_fields)
             self.save()
 

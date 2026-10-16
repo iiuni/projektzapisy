@@ -29,7 +29,7 @@ class CourseInstance(CourseInformation):
         if not self.slug:
             self.slug = slugify(f'{self.name} {self.semester}')
             update_fields = kwargs.get('update_fields')
-            if update_fields is not None: # otherwise all fields are updated anyway
+            if update_fields is not None:        # otherwise all fields are updated anyway
                 kwargs['update_fields'] = {'slug'}.union(update_fields)
         super().save(*args, **kwargs)
 
