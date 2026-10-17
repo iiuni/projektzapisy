@@ -85,10 +85,7 @@ class CourseInformation(models.Model):
         # so that self.pk is set, and thus the second save is warranted.
         if not self.slug:
             self.slug = slugify(f'{self.pk} {self.name}')
-            update_fields = kwargs.get('update_fields')
-            if update_fields is not None:        # otherwise all fields are updated anyway
-                kwargs['update_fields'] = {'slug'}.union(update_fields)
-            self.save()
+            self.save(update_fields={'slug'})
 
     def __str__(self):
         return self.name
