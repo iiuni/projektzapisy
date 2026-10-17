@@ -81,9 +81,8 @@ const AssetDefs = {
   // Schedule app
 
   "schedule-reservation-widget": [
-    path.resolve("apps/schedule/assets/reservation-widget.js"),
+    path.resolve("apps/schedule/assets/reservation-widget.ts"),
   ],
-  "schedule-reservation": [path.resolve("apps/schedule/assets/reservation.js")],
   "schedule-fullcalendar": [
     path.resolve("apps/schedule/assets/fullcalendar.js"),
     path.resolve("apps/schedule/assets/fullcalendar.scss"),
