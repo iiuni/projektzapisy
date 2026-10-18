@@ -4,6 +4,7 @@ from collections import defaultdict
 from operator import attrgetter
 from typing import List
 
+from django.conf import settings
 from django.contrib import messages
 from django.shortcuts import redirect, render, reverse
 from django.views.generic import TemplateView, UpdateView, View
@@ -247,6 +248,7 @@ class PollResults(TemplateView):
                 request,
                 self.template_name,
                 {
+                    'bokehjs': f'{settings.BOKEHJS_STATIC_PREFIX}/bokeh.min.js',
                     'is_grade_active': is_grade_active,
                     'polls': group(entries=available_polls, sort=True),
                     'results': self.__get_processed_results(submissions),

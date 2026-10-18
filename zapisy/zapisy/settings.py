@@ -1,3 +1,5 @@
+import importlib.metadata
+import importlib.util
 import os
 import sys
 
@@ -381,8 +383,14 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATIC_URL = '/static/'
+# BokehJS (used for plotting poll results) is served straight from the static
+# files of the bokeh package, so that its version always matches the version of
+# the Python library. The version in the URL prefix busts browser caches.
+BOKEHJS_STATIC_PREFIX = 'bokeh-' + importlib.metadata.version('bokeh')
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "compiled_assets"),
+    (BOKEHJS_STATIC_PREFIX,
+     os.path.join(os.path.dirname(importlib.util.find_spec('bokeh').origin), 'server', 'static', 'js')),
 )
 
 WEBPACK_LOADER = {

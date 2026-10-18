@@ -26,10 +26,10 @@ pymemcache==4.0.0
 more-itertools==11.1.0
 # PyYAML is used for fixtures.
 pyyaml==6.0.3
-# Bokeh - library used for plotting in views displaying Poll results
-bokeh==2.4.3
-# NumPy is required by Bokeh; forced downgrade to be removed after Bokeh upgrade
-numpy==1.23.5
+# Bokeh - library used for plotting in views displaying Poll results. BokehJS is
+# served from the static files of this package (see STATICFILES_DIRS).
+bokeh==3.9.2
+numpy==2.2.6
 
 gspread==6.2.1
 typing-extensions==4.16.0

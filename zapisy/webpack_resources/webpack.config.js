@@ -37,23 +37,6 @@ const RULES = [
     },
   },
 
-  // Bokeh needs to be translated by babel because it is compiled in a way that
-  // webpack is not able to understand.
-  {
-    test: /(@bokeh\/).*\.js$/,
-    use: {
-      loader: require.resolve("babel-loader"),
-      options: {
-        presets: [
-          [
-            "@babel/preset-env",
-            { bugfixes: true, targets: { esmodules: true } },
-          ],
-        ],
-      },
-    },
-  },
-
   // Styles are compiled, post-processed (vendor-prefixes) and extracted to
   // separate css files.
   {
