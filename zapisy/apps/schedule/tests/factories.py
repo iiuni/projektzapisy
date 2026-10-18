@@ -24,6 +24,7 @@ class EventCourseFactory(DjangoModelFactory):
 class EventFactory(DjangoModelFactory):
     class Meta:
         model = Event
+        skip_postgeneration_save = True
 
     type = factory.Iterator([
         Event.TYPE_GENERIC, Event.TYPE_CLASS, Event.TYPE_TEST, Event.TYPE_EXAM, Event.TYPE_CLASS,

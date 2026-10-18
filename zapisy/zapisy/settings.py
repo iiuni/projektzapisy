@@ -1,4 +1,7 @@
+import importlib.metadata
+import importlib.util
 import os
+import sys
 
 import environ
 from django.contrib.messages import constants as messages
@@ -39,7 +42,7 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': env.str('DATABASE_NAME'),
         'PORT': env.str('DATABASE_PORT'),
         'USER': env.str('DATABASE_USER'),
@@ -156,6 +159,11 @@ SITE_ID = 1
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
+# Tests create lots of users. Hashing their passwords with the deliberately slow
+# default algorithm would dominate the run time of the test suite.
+if sys.argv[1:2] == ['test']:
+    PASSWORD_HASHERS = ['django.contrib.auth.hashers.MD5PasswordHasher']
+
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
@@ -245,6 +253,7 @@ INSTALLED_APPS = (
     'django_filters',
     'django_bootstrap5',
     'crispy_forms',
+    'crispy_bootstrap4',
     'apps.notifications',
     'django_cas_ng',
     'django_rq',
@@ -369,12 +378,19 @@ CACHES = {
 
 NEWS_PER_PAGE = 15
 
+CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap4'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATIC_URL = '/static/'
+# BokehJS (used for plotting poll results) is served straight from the static
+# files of the bokeh package, so that its version always matches the version of
+# the Python library. The version in the URL prefix busts browser caches.
+BOKEHJS_STATIC_PREFIX = 'bokeh-' + importlib.metadata.version('bokeh')
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "compiled_assets"),
+    (BOKEHJS_STATIC_PREFIX,
+     os.path.join(os.path.dirname(importlib.util.find_spec('bokeh').origin), 'server', 'static', 'js')),
 )
 
 WEBPACK_LOADER = {

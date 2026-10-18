@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from slack import WebClient
+from slack_sdk import WebClient
 
 
 def get_connected_slack_client(secrets_env):

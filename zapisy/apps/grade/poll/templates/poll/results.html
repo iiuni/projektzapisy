@@ -1,6 +1,6 @@
 {% extends "grade/base.html" %}
 {% load cache %}
-{% load render_bundle get_files from webpack_loader %}
+{% load static %}
 {% load filters %}
 
 {% block main-subtitle %}Wyniki oceny{% endblock %}
@@ -13,7 +13,7 @@
 
 {% block all-content %}
 
-{% render_bundle 'poll-bokeh-plotting' %}
+<script src="{% static bokehjs %}"></script>
 
 <div class="row">
   <div class="col-lg-8 col-12">

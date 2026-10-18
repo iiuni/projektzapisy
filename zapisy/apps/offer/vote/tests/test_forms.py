@@ -127,7 +127,7 @@ class VoteFormsetTest(test.TestCase):
         formset = prepare_vote_formset(self.state, self.student1, data)
         self.assertTrue(formset.is_valid())
         formset.save()
-        self.assertQuerysetEqual(SingleVote.objects.filter(state=self.state, student=self.student1),
+        self.assertQuerySetEqual(SingleVote.objects.filter(state=self.state, student=self.student1),
                                  [3, 0, 2, 2, 3, 2],
                                  transform=lambda sv: sv.value)
 
@@ -191,4 +191,4 @@ class VoteFormsetTest(test.TestCase):
 
         votes_in_semester = SingleVote.objects.filter(
             state=self.state, student=self.student2).in_semester(self.state.semester_winter)
-        self.assertQuerysetEqual(votes_in_semester, [3, 2, 2], transform=lambda sv: sv.val)
+        self.assertQuerySetEqual(votes_in_semester, [3, 2, 2], transform=lambda sv: sv.val)

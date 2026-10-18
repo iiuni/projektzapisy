@@ -29,12 +29,12 @@ statycznych](https://github.com/iiuni/projektzapisy/wiki/Pliki-statyczne-w-Syste
 
 System Zapisów jest podzielony na moduły (zwane aplikacjami). Każda aplikacja
 definiuje swoje własne typy danych
-([_modele_](https://docs.djangoproject.com/en/3.1/intro/tutorial02/#creating-models)),
+([_modele_](https://docs.djangoproject.com/en/5.2/intro/tutorial02/#creating-models)),
 którym odpowiadają automatycznie obsługiwane tabele w bazie danych. Każda
 aplikacja dba o swoje własne ścieżki
-([URL-e](https://docs.djangoproject.com/en/3.1/intro/tutorial01/#write-your-first-view))
+([URL-e](https://docs.djangoproject.com/en/5.2/intro/tutorial01/#write-your-first-view))
 i implementuje funkcje odpowiadające na zapytania HTTP (zwane
-[_widokami_](https://docs.djangoproject.com/en/3.1/intro/tutorial03/#write-views-that-actually-do-something)).
+[_widokami_](https://docs.djangoproject.com/en/5.2/intro/tutorial03/#write-views-that-actually-do-something)).
 Powiązania między aplikacjami są realizowane poprzez importowanie kodu z jednego
 modułu do drugiego oraz przez klucze obce w bazie danych. Zwięzły opis
 wszystkich aplikacji w naszym systemie

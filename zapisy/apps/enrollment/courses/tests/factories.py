@@ -112,6 +112,7 @@ class ClassroomFactory(DjangoModelFactory):
 class TermFactory(DjangoModelFactory):
     class Meta:
         model = Term
+        skip_postgeneration_save = True
 
     dayOfWeek = '2'
     start_time = time(10, 00)

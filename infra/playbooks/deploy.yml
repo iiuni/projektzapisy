@@ -18,13 +18,13 @@
       become_user: "{{ deploy_user }}"
       git:
         repo: 'https://github.com/iiuni/projektzapisy.git'
-        dest: "{{ deploy_helper.new_release_path }}"
+        dest: "{{ ansible_facts.deploy_helper.new_release_path }}"
         version: "{{ deploy_version }}"
 
     - name: Add an unfinished file, to allow cleanup on successful finalize
       become: yes
       file:
-        path: "{{ deploy_helper.new_release_path }}/{{ deploy_helper.unfinished_filename }}"
+        path: "{{ ansible_facts.deploy_helper.new_release_path }}/{{ ansible_facts.deploy_helper.unfinished_filename }}"
         state: touch
 
     - name: Copy .env file
@@ -32,7 +32,7 @@
       become_user: "{{ deploy_user }}"
       copy:
         src: "/home/{{ deploy_user }}/.env"
-        dest: "{{ deploy_helper.new_release_path }}/env"
+        dest: "{{ ansible_facts.deploy_helper.new_release_path }}/env"
         force: yes
         remote_src: yes
 
@@ -40,7 +40,7 @@
       become: yes
       become_user: "{{ deploy_user }}"
       file:
-        path: "{{ deploy_helper.new_release_path }}/infra/db_backups/perform_dump.sh"
+        path: "{{ ansible_facts.deploy_helper.new_release_path }}/infra/db_backups/perform_dump.sh"
         mode: '0774'
 
     - name: Upgrade pip
@@ -49,21 +49,21 @@
       pip:
         name: pip
         state: latest
-        virtualenv: "{{ deploy_helper.new_release_path }}/venv"
+        virtualenv: "{{ ansible_facts.deploy_helper.new_release_path }}/venv"
         virtualenv_command: "{{ ansible_python_interpreter }} -m venv"
 
     - name: Set up virtualenv and get requirements
       become: yes
       become_user: "{{ deploy_user }}"
       pip:
-        virtualenv: "{{ deploy_helper.new_release_path }}/venv"
+        virtualenv: "{{ ansible_facts.deploy_helper.new_release_path }}/venv"
         virtualenv_command: "{{ ansible_python_interpreter }} -m venv"
-        requirements: "{{ deploy_helper.new_release_path }}/zapisy/requirements.production.txt"
+        requirements: "{{ ansible_facts.deploy_helper.new_release_path }}/zapisy/requirements.production.txt"
 
     - name: Create logs directory
       become: yes
       file:
-        path: "{{ deploy_helper.new_release_path }}/zapisy/logs"
+        path: "{{ ansible_facts.deploy_helper.new_release_path }}/zapisy/logs"
         owner: "{{ deploy_user }}"
         state: directory
         group: "www-data"
@@ -73,14 +73,14 @@
       become: yes
       become_user: "{{ deploy_user }}"
       file:
-        path: "{{ deploy_helper.new_release_path }}/zapisy/static"
+        path: "{{ ansible_facts.deploy_helper.new_release_path }}/zapisy/static"
         state: directory
 
     - name: Create compiled_assets directory
       become: yes
       become_user: "{{ deploy_user }}"
       file:
-        path: "{{ deploy_helper.new_release_path }}/zapisy/compiled_assets"
+        path: "{{ ansible_facts.deploy_helper.new_release_path }}/zapisy/compiled_assets"
         state: directory
 
     - name: Apply migrates
@@ -88,14 +88,14 @@
       become_user: "{{ deploy_user }}"
       django_manage:
         command: migrate
-        app_path: "{{ deploy_helper.new_release_path }}/zapisy"
-        virtualenv: "{{ deploy_helper.new_release_path }}/venv"
+        app_path: "{{ ansible_facts.deploy_helper.new_release_path }}/zapisy"
+        virtualenv: "{{ ansible_facts.deploy_helper.new_release_path }}/venv"
 
     - name: Make sure that directory for gunicorn exists
       become: yes
       become_user: "{{ deploy_user }}"
       file:
-        path: "{{ deploy_helper.new_release_path }}/venv/run/"
+        path: "{{ ansible_facts.deploy_helper.new_release_path }}/venv/run/"
         state: directory
 
     - name: Install dependencies based on package.json
@@ -103,29 +103,29 @@
       become_user: "{{ deploy_user }}"
       command: yarnpkg install --immutable
       args:
-        chdir: "{{ deploy_helper.new_release_path }}/zapisy/"
+        chdir: "{{ ansible_facts.deploy_helper.new_release_path }}/zapisy/"
 
     - name: Build project
       become: yes
       become_user: "{{ deploy_user }}"
       command: yarnpkg build
       args:
-        chdir: "{{ deploy_helper.new_release_path }}/zapisy/"
+        chdir: "{{ ansible_facts.deploy_helper.new_release_path }}/zapisy/"
 
     - name: Django collect static files
       become: yes
       become_user: "{{ deploy_user }}"
       django_manage:
         command: collectstatic
-        app_path: "{{ deploy_helper.new_release_path }}/zapisy"
-        virtualenv: "{{ deploy_helper.new_release_path }}/venv"
+        app_path: "{{ ansible_facts.deploy_helper.new_release_path }}/zapisy"
+        virtualenv: "{{ ansible_facts.deploy_helper.new_release_path }}/venv"
 
     - name: Finalize the deploy, removing the unfinished file and switching the symlink
       become: yes
       become_user: "{{ deploy_user }}"
       deploy_helper:
         path: "/home/{{ deploy_user }}/deploy"
-        release: "{{ deploy_helper.new_release }}"
+        release: "{{ ansible_facts.deploy_helper.new_release }}"
         state: finalize
         clean: true
         keep_releases: 2

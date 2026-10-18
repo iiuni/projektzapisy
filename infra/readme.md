@@ -3,6 +3,12 @@
 This manual will allow you to configure the remote machine with the Ubuntu
 system and deploy System Zapisów on it.
 
+The playbooks target a standard installation of Ubuntu 22.04 LTS (the system
+versions of Python, PostgreSQL, Redis and Node.js are used). On your own
+computer install the full `ansible` package (e.g. with `pipx install ansible`),
+as the playbooks use modules from the `community.general`, `community.crypto`
+and `community.postgresql` collections bundled with it.
+
 ## Setting up the machine
 
 Every admin has his own account with no-password sudo privileges on the remote
