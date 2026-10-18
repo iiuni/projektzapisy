@@ -49,3 +49,8 @@ def main_page(request):
     all_news_except_hidden = News.objects.published().select_related('author')
     recent_news = all_news_except_hidden[:2] if all_news_except_hidden else None
     return render(request, 'common/index.html', {'recent_news': recent_news})
+
+
+def accessibility_page(request):
+    """Deklaracja dostępności cyfrowej serwisu."""
+    return render(request, 'common/dostepnosc.html')
