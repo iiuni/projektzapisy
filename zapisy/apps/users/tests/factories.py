@@ -21,7 +21,7 @@ class UserFactory(DjangoModelFactory):
     pref_username = factory.Sequence(lambda n: 'testuser_{0}'.format(n))
     suff_username = ""
     username = factory.LazyAttribute(lambda o: o.pref_username + o.suff_username)
-    password = factory.PostGenerationMethodCall('set_password', 'test')
+    password = factory.django.Password('test')
     first_name = 'user'
     last_name = factory.LazyAttributeSequence(lambda o, n: f'{n}{o.suff_username}')
     is_staff = False
@@ -42,6 +42,13 @@ class StudentFactory(DjangoModelFactory):
         students.save()
         return students
 
+    @classmethod
+    def _after_postgeneration(cls, instance, create, results=None):
+        # The student is saved once again (as factory_boy used to do by default),
+        # so that `apps.users.signals` add the user to the group of their program.
+        if create:
+            instance.save()
+
     user = factory.SubFactory(UserFactory, suff_username="_s")
     matricula = factory.Sequence(lambda n: ('9%05d' % n))
 
@@ -50,6 +57,7 @@ class EmployeeFactory(DjangoModelFactory):
     class Meta:
         model = Employee
         exclude = ("group",)
+        skip_postgeneration_save = True
 
     @post_generation
     def group(self, create: Any, extracted: Any, **kwargs: Any) -> Group:

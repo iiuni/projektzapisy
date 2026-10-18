@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.db import models
 
 from .models import Employee
 
@@ -16,7 +17,15 @@ class EmailChangeForm(forms.ModelForm):
         return email
 
 
+def formfield_assuming_https(db_field, **kwargs):
+    """Makes URL fields prepend 'https://' to addresses entered without a scheme."""
+    if isinstance(db_field, models.URLField):
+        kwargs['assume_scheme'] = 'https'
+    return db_field.formfield(**kwargs)
+
+
 class EmployeeDataForm(forms.ModelForm):
     class Meta:
         model = Employee
         fields = ('title', 'room', 'homepage', 'consultations',)
+        formfield_callback = formfield_assuming_https

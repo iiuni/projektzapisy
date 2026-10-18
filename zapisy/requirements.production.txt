@@ -1,7 +1,7 @@
 -r requirements.common.txt
 
 psycopg2==2.9.13
-slackclient==2.9.4
-dropbox==10.10.0
+slack-sdk==3.45.0
+dropbox==12.1.0
 gunicorn==26.2.0
 newrelic
