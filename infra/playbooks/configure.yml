@@ -17,8 +17,11 @@
       become: yes
 
     # installation acl: https://github.com/georchestra/ansible/issues/55#issuecomment-588313638
+    # The package lists may be missing on a fresh machine (e.g. a cloud image).
     - name: Install tools
       apt:
+        update_cache: yes
+        cache_valid_time: 3600
         pkg:
         - acl
         - nodejs
@@ -31,12 +34,15 @@
         - p7zip-full
       become: yes
 
+    # build-essential, python3-dev and libpq-dev are needed to build psycopg2.
     - name: Install python tools
       apt:
         pkg:
         - python3
         - python3-pip
         - python3-venv
+        - python3-dev
+        - build-essential
         - libpq-dev
         - python3-psycopg2
       become: yes
@@ -65,9 +71,10 @@
         APP_DB_PASS: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters,digits') }}"
       no_log: True
 
+    # Whitespace, quotes, '#' or a leading '$' would break the .env file.
     - name: Generate Django Secret key
       set_fact:
-        DJANGO_SECRET_KEY: "{{ lookup('password', '/dev/null length=50 chars=printable') }}"
+        DJANGO_SECRET_KEY: "{{ lookup('password', '/dev/null length=64 chars=ascii_letters,digits') }}"
       no_log: True
 
     - name: Copy .env file to deploy_user's home and edit
