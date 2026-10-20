@@ -32,7 +32,7 @@ def offer(request, slug=None):
         qs = qs.filter(owner__user__is_active=True)
 
     proposal_list = []
-    for p in qs.prefetch_related('effects', 'tags'):
+    for p in qs.select_related('owner__user').prefetch_related('effects', 'tags'):
         proposal_dict = p.__json__()
         proposal_dict.update({
             'status': ProposalStatus(p.status)._name_,

@@ -19,7 +19,8 @@ from apps.users.models import Student
 def list_all(request):
     """Display list of all visible theses."""
     visible_theses = Thesis.objects.visible(request.user).select_related(
-        'advisor', 'advisor__user').prefetch_related('students', 'students__user')
+        'advisor', 'advisor__user', 'supporting_advisor', 'supporting_advisor__user'
+    ).prefetch_related('students', 'students__user')
 
     theses_list = []
     for p in visible_theses:

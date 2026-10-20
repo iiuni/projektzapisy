@@ -117,7 +117,9 @@ class Thesis(models.Model):
         return self.advisor is not None and user == self.advisor.user
 
     def is_student_assigned(self, user):
-        return self.students is not None and self.students.filter(user=user).exists()
+        # Iterating over all() (instead of filtering) makes use of
+        # prefetch_related('students') in the list view.
+        return any(student.user_id == user.id for student in self.students.all())
 
     def is_supporting_advisor_assigned(self, user):
         return self.supporting_advisor is not None and user == self.supporting_advisor.user
