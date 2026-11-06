@@ -1,11 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 from django.forms.models import model_to_dict
+from django.db.models import Q
 
 from apps.theses.enums import ThesisStatus, ThesisVote
 from apps.theses.forms import EditThesisForm, RejecterForm, RemarkForm, ThesisForm, VoteForm
@@ -281,3 +282,24 @@ def delete_thesis(request, id):
     thesis.delete()
     messages.success(request, 'Pomyślnie usunięto pracę dyplomową')
     return redirect('theses:main')
+
+
+@require_GET
+@employee_required
+def students(request, substring):
+    if not substring:
+        substring = ''
+
+    conditions = (
+        Q(user__first_name__icontains=substring) |
+        Q(user__last_name__icontains=substring) |
+        Q(matricula__icontains=substring)
+    )
+    matching_students = Student.objects.filter(conditions)
+    # Return matching students in a filter-friendly format
+    return JsonResponse({'students': [
+        {
+            'value': s.id,
+            'label': str(s)
+        } for s in matching_students
+    ]})
