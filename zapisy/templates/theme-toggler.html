@@ -1,0 +1,30 @@
+<button id="theme-toggler" class="btn ms-3">
+    <i class="far fa-moon"></i> <span class="button-text">Tryb ciemny</span>
+</button>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const button = document.getElementById("theme-toggler");
+    const icon = button.querySelector("i");
+    const text = button.querySelector(".button-text");
+
+    const isDarkMode = localStorage.getItem("theme") === "dark";
+    if (isDarkMode) {
+        document.body.classList.add("dark-mode");
+        icon.classList.replace("fa-moon", "fa-sun");
+        text.textContent = "Tryb jasny";
+    }
+    button.addEventListener("click", () => {
+        const isDark = document.body.classList.toggle("dark-mode");
+        localStorage.setItem("theme", isDark ? "dark" : "light");
+
+        if (isDark) {
+            icon.classList.replace("fa-moon", "fa-sun");
+            text.textContent = "Tryb jasny";
+        } else {
+            icon.classList.replace("fa-sun", "fa-moon");
+            text.textContent = "Tryb ciemny";
+        }
+    });
+});
+</script>

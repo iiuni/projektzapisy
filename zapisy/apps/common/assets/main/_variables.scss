@@ -13,12 +13,11 @@ $h5-font-size: $font-size-base * 1.25 !default;
 $h6-font-size: $font-size-base !default;
 
 $enable-responsive-font-sizes: true;
-$breadcrumb-bg: #ffffff;
 
 $input-placeholder-color: #adb5bd; // gray-500
 
-$primary: rgb(0, 102, 158) !default;
-$success: rgb(0, 115, 54) !default;
+$primary: rgb(0, 102, 158) !default; // rgb(0, 102, 158) !default;
+$success: rgb(0, 115, 54) !default; //rgb(0, 115, 54) !default;
 
 $blue: #007bff !default;
 $link-color: $blue !default;

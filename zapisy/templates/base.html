@@ -11,7 +11,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{% block main-subtitle %}{% endblock %} &ndash; {% block title %}System Zapisów{% endblock %}</title>
     <meta name="description" content="System obsługi cyklu dydaktycznego Instytut Informatyki Uniwersytetu Wrocławskiego">
-
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="shortcut icon" href="{% static 'common/images/favicon.ico' %}">
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-109984921-1"></script>
@@ -66,6 +67,7 @@
                     </ul>
                 {% if user.is_authenticated %}
                     <div class="navbar-nav ms-auto">
+                        {% include 'theme-toggler.html' %}                        
                         <span class="navbar-text">
                             <strong>
                                 {{ user.get_full_name }}
@@ -94,6 +96,7 @@
                     </div>
                 {% else %}
                     <ul class="navbar-nav">
+                        {% include 'theme-toggler.html' %}
                         <li class="nav-item dropdown" id="login-dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                             data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  data-bs-auto-close="outside" >
@@ -215,7 +218,7 @@
     {% block rendered_bundles %}
     {% endblock %}
     <footer class="d-print-none">
-        <div class="container-fluid bg-light">
+        <div class="container-fluid">
             <div class="container">
                 <p>
                     &copy; {% now "Y" %} <a href="http://www.ii.uni.wroc.pl/">Instytut Informatyki UWr</a>
