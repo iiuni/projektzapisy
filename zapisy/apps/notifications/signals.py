@@ -77,7 +77,7 @@ def notify_that_group_was_added_in_course(sender: Group, **kwargs) -> None:
             Notification(get_id(), get_time(), NotificationType.ASSIGNED_TO_NEW_GROUP_AS_A_TEACHER,
                          {'course_name': course_name}, target))
 
-    enrolled_or_queued = [RecordStatus.ENROLLED, RecordStatus.QUEUED]
+    enrolled_or_queued = [RecordStatus.ENROLLED, RecordStatus.QUEUED, RecordStatus.BLOCKED]
     records = Record.objects.filter(group__in=course_groups,
                                     status__in=enrolled_or_queued).select_related(
                                         'student', 'student__user')
@@ -105,7 +105,7 @@ def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
                      {'course_name': course_name}, target))
 
     queued_users = User.objects.filter(
-        student__record__group=group, student__record__status=RecordStatus.QUEUED)
+        student__record__group=group, student__record__status__in=[RecordStatus.QUEUED, RecordStatus.BLOCKED])
 
     enrolled_users = User.objects.filter(
         student__record__group=group, student__record__status=RecordStatus.ENROLLED)

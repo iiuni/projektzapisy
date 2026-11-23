@@ -8,6 +8,7 @@ from apps.enrollment.courses.models.course_instance import CourseInstance
 from apps.enrollment.courses.models.group import Group, GroupType
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records import models as records_models
+from apps.enrollment.records import engine
 from apps.users.models import Student
 
 
@@ -127,7 +128,7 @@ class Poll(models.Model):
         :param student:
         """
         if self.group:
-            if not records_models.Record.is_enrolled(student.id, self.group_id):
+            if not engine.is_enrolled(student.id, self.group_id):
                 return False
         if self.course:
             return records_models.Record.objects.filter(

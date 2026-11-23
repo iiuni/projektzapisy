@@ -136,7 +136,7 @@ class GroupOpeningTimes(models.Model):
 
     @classmethod
     def are_groups_open_for_student(cls, student: Student, groups: List[Group],
-                                    time: datetime) -> Dict[int, bool]:
+                                    time: datetime = None) -> Dict[int, bool]:
         """For each group in groups checks if the group is open for the student.
 
         For a single group, we first look at the course-specific opening and
@@ -151,6 +151,8 @@ class GroupOpeningTimes(models.Model):
         """
         if not groups:
             return {}
+        if time is None:
+            time = datetime.now()
         # We assume all the groups are in the same semester.
         is_after_t0 = T0Times.is_after_t0(student, groups[0].course.semester, time)
 
