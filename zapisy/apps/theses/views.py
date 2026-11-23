@@ -65,14 +65,15 @@ def view_thesis(request, id):
     user_privileged_for_thesis = thesis.is_user_privileged(request.user)
     can_edit_thesis = thesis.is_mine(request.user)
     save_and_verify = thesis.is_mine(request.user) and thesis.is_returned
-    can_vote = thesis.is_voting_active and board_member
+    is_advisor = thesis.is_among_advisors(request.user)
+    can_vote = thesis.is_voting_active and board_member and not is_advisor
     show_master_rejecter = is_master_rejecter(request.user) and (
         thesis.is_voting_active or thesis.is_returned)
     can_download_declarations = thesis.can_user_download_declarations(request.user)
 
     students = thesis.students.all()
 
-    all_voters = get_theses_board()
+    all_voters = get_theses_board(thesis)
     votes = []
     voters = []
     for vote in thesis.thesis_votes.all():
@@ -125,6 +126,7 @@ def view_thesis(request, id):
             'show_master_rejecter': show_master_rejecter,
             'can_see_remarks': user_privileged_for_thesis,
             'save_and_verify': save_and_verify,
+            'is_advisor': is_advisor,
             'can_vote': can_vote,
             'can_edit_thesis': can_edit_thesis,
             'can_download_declarations': can_download_declarations,

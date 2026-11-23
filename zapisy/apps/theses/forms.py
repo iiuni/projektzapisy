@@ -22,12 +22,6 @@ class RemarkFormAdmin(forms.ModelForm):
         fields = '__all__'
 
 
-class VoteFormAdmin(forms.ModelForm):
-    class Meta:
-        model = Vote
-        fields = '__all__'
-
-
 class ThesisFormBase(forms.ModelForm):
     class Meta:
         model = Thesis
