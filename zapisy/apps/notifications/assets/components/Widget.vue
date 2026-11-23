@@ -79,7 +79,7 @@ export default class NotificationsComponent extends Vue {
       });
   }
 
-  deleteOne(i: number): Promise<void> {
+  deleteOne(i: string): Promise<void> {
     axios.defaults.xsrfCookieName = "csrftoken";
     axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
