@@ -9,6 +9,8 @@
     records_ects_limit_abolition: 2011-10-02T23:59:00+02:00
     semester_beginning: 2011-09-26T00:00:00+02:00
     semester_ending: 2012-01-22T23:59:59+01:00
+    lectures_beginning: 2011-09-26T00:00:00+02:00
+    lectures_ending: 2012-01-22T23:59:59+01:00
 - model: vote.SystemState
   pk: 1
   fields:
