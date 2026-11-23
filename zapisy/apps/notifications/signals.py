@@ -7,7 +7,6 @@ from django.dispatch import receiver
 from django.urls import reverse
 
 from apps.enrollment.courses.models.group import Group
-from apps.enrollment.courses.views import course_view
 from apps.enrollment.records.models import Record, RecordStatus
 from apps.news.models import News, PriorityChoices
 from apps.notifications.api import notify_selected_users, notify_user
@@ -32,7 +31,7 @@ def get_time() -> datetime:
 @receiver(student_pulled, sender=Record)
 def notify_that_student_was_pulled_from_queue(sender: Record, **kwargs) -> None:
     group = kwargs['instance']
-    target = reverse(course_view, args=[group.course.slug])
+    target = reverse('course-page', args=[group.course.slug])
 
     notify_user(
         kwargs['user'],
@@ -47,7 +46,7 @@ def notify_that_student_was_pulled_from_queue(sender: Record, **kwargs) -> None:
 @receiver(student_not_pulled, sender=Record)
 def notify_that_student_was_not_pulled_from_queue(sender: Record, **kwargs) -> None:
     group = kwargs['instance']
-    target = reverse(course_view, args=[group.course.slug])
+    target = reverse('course-page', args=[group.course.slug])
 
     notify_user(
         kwargs['user'],
@@ -67,7 +66,7 @@ def notify_that_group_was_added_in_course(sender: Group, **kwargs) -> None:
         return
     course_groups = Group.objects.filter(course=group.course)
     course_name = group.course.name
-    target = reverse(course_view, args=[group.course.slug])
+    target = reverse('course-page', args=[group.course.slug])
 
     if group.teacher is not None:
         teacher = group.teacher.user
@@ -97,7 +96,7 @@ def notify_that_teacher_was_changed(sender: Group, **kwargs) -> None:
         return
     teacher = group.teacher.user
     course_name = group.course.name
-    target = reverse(course_view, args=[group.course.slug])
+    target = reverse('course-page', args=[group.course.slug])
 
     notify_user(
         teacher,
