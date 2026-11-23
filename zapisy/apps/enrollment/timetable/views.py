@@ -46,6 +46,8 @@ def build_group_list(groups: List[Group]):
                 'url': reverse('course-page', args=(group.course.slug, )),
                 'name': group.course.name,
                 'shortName': group.course.short_name,
+                'points': group.course.points,
+                'id': group.course.id,
             },
             'type': decode_class_type_singular(group.type),
             'url': reverse('group-view', args=(group.pk, )),
@@ -180,6 +182,7 @@ def my_prototype(request):
     filters_dict = CourseInstance.prepare_filter_data(
         CourseInstance.objects.filter(semester=semester))
     courses_json = list_courses_in_semester(semester)
+
     data = {
         'groups_json': group_dicts,
         'filters_json': filters_dict,
