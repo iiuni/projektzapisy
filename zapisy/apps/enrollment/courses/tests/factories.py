@@ -27,7 +27,6 @@ class SemesterFactory(DjangoModelFactory):
     type = factory.Iterator([Semester.TYPE_WINTER, Semester.TYPE_SUMMER])
     raw_year = factory.Faker('semester_year')
     year = factory.LazyAttribute(lambda sem: Semester.get_semester_year_from_raw_year(sem.raw_year))
-    is_grade_active = False
     if type == Semester.TYPE_WINTER:
         records_opening = \
             factory.LazyAttribute(lambda x: datetime(x.raw_year, 9, 20))
@@ -40,6 +39,10 @@ class SemesterFactory(DjangoModelFactory):
         semester_beginning = \
             factory.LazyAttribute(lambda x: datetime(x.raw_year, 10, 1))
         semester_ending = \
+            factory.LazyAttribute(lambda x: datetime(x.raw_year + 1, 2, 22))
+        semester_grade_beginning = \
+            factory.LazyAttribute(lambda x: datetime(x.raw_year + 1, 2, 1))
+        semester_grade_ending = \
             factory.LazyAttribute(lambda x: datetime(x.raw_year + 1, 2, 22))
         records_ects_limit_abolition =  \
             factory.LazyAttribute(lambda x: datetime(x.raw_year - 1, 10, 1))
@@ -56,6 +59,10 @@ class SemesterFactory(DjangoModelFactory):
             factory.LazyAttribute(lambda x: datetime(x.raw_year + 1, 2, 25))
         semester_ending = \
             factory.LazyAttribute(lambda x: datetime(x.raw_year + 1, 9, 30))
+        semester_grade_beginning = \
+            factory.LazyAttribute(lambda x: datetime(x.raw_year + 1, 6, 6))
+        semester_grade_ending = \
+            factory.LazyAttribute(lambda x: datetime(x.raw_year + 1, 7, 10))
         records_ects_limit_abolition = \
             factory.LazyAttribute(lambda x: datetime(x.raw_year, 3, 1))
 

@@ -35,21 +35,25 @@ class APITest(test.TestCase):
         Record.objects.create(student=self.student,
                               group=self.groups[0],
                               status=RecordStatus.ENROLLED)
-        time_in_semester = self.semester.semester_beginning + (self.semester.semester_ending -
-                                                               self.semester.semester_beginning) / 2
+
+        time_in_semester = self.semester.semester_grade_beginning
         time_after_semester = self.semester.semester_ending + timedelta(days=1)
+
         with freeze_time(time_after_semester):
             # When semester is gone, no Polls should be available.
             self.assertListEqual(Poll.get_all_polls_for_student(self.student), [])
         with freeze_time(time_in_semester):
-            # When grade is closed, no Polls should be available.
-            self.assertListEqual(Poll.get_all_polls_for_student(self.student), [])
-
-        self.semester.is_grade_active = True
-        self.semester.save()
-        with freeze_time(time_after_semester):
-            # This still should be empty.
-            self.assertListEqual(Poll.get_all_polls_for_student(self.student), [])
-        with freeze_time(time_in_semester):
             # Three Polls should be available to the student.
+            self.assertEqual(len(Poll.get_all_polls_for_student(self.student)), 3)
+
+        # Extend time for graded classes by a few after semester.
+        self.semester.semester_grade_ending = \
+            self.semester.semester_ending + timedelta(days=3)
+        self.semester.save()
+
+        with freeze_time(time_after_semester):
+            # Three Polls should be available a day after end of the semester.
+            self.assertEqual(len(Poll.get_all_polls_for_student(self.student)), 3)
+        with freeze_time(time_in_semester):
+            # Three Polls should be still available to the student.
             self.assertEqual(len(Poll.get_all_polls_for_student(self.student)), 3)
