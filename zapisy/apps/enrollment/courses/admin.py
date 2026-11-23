@@ -130,7 +130,7 @@ class RecordInline(admin.TabularInline):
 class GroupAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
-            'fields': ('course', 'teacher', 'type', 'extra', 'export_usos'),
+            'fields': ('course', 'teacher', 'type', 'extra', 'export_usos', 'last_record_changes_check'),
         }),
         ('Zapisy', {
             'fields': ('limit', 'auto_enrollment'),
@@ -192,6 +192,12 @@ class TypeAdmin(admin.ModelAdmin):
     list_filter = ('group', 'meta_type')
 
 
+# class RecordAdmin(admin.ModelAdmin):
+#     search_fields = ('id',)
+#     readonly_fields = ('id', 'group', 'student',)
+
+
+# admin.site.register(Record, RecordAdmin)  # for testing only
 admin.site.register(Group, GroupAdmin)
 admin.site.register(Tag)
 admin.site.register(Effects)

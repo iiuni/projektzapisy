@@ -82,6 +82,16 @@
                 <ul>
                     <li><a href="{% url 'group-csv' group.id %}">csv</a></li>
                 </ul>
+
+                {% if request.user.id ==  group.teacher.user.id %}
+                <h5>Ściągnij zmiany na liście studentów od ostatniego sprawdzenia:</h5>
+                {% if group.any_record_changes_check_made %}
+                    <p>Czas ostatniego sprawdzenia: {{ group.last_record_changes_check }}</p>
+                {% endif %}
+                <ul>
+                    <li><a href="{% url 'group-changes-csv' group.id %}">csv</a></li>
+                </ul>
+                {% endif %}
             </div>
             {% endif %}
         {% endif %}
