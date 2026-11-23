@@ -14,6 +14,9 @@ import {
   MultiselectFilterData,
 } from "@/enrollment/timetable/assets/models";
 
+import { CourseInfo } from "@/enrollment/timetable/assets/store/courses";
+import { ProposalInfo } from "./CourseList.vue";
+
 export default Vue.extend({
   components: {
     TextFilter,
@@ -92,6 +95,12 @@ export default Vue.extend({
   },
   methods: {
     ...mapMutations("filters", ["clearFilters"]),
+    firstYearRecommended: function (course: CourseInfo) {
+      return course.recommendedForFirstYear == true;
+    },
+    activeOwner: function (proposal: ProposalInfo) {
+      return proposal.isOwnerActive == true;
+    },
   },
 });
 </script>
@@ -164,14 +173,14 @@ export default Vue.extend({
           <hr />
           <CheckFilter
             filterKey="freshmen-filter"
-            property="recommendedForFirstYear"
             label="Pokaż tylko przedmioty zalecane dla pierwszego roku"
+            :predicate="firstYearRecommended"
             ref="freshmen-filter"
           />
           <CheckFilter
             v-if="containsInactiveOwner"
             filterKey="hide-inactive-filter"
-            property="isOwnerActive"
+            :predicate="activeOwner"
             label="Ukryj propozycje należące do kont nieaktywnych"
             ref="hide-inactive-filter"
           />

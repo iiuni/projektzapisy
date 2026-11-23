@@ -70,12 +70,30 @@ def groups(request):
                                   'number': waiting_students[course_id][class_type]}
                                  for class_type in waiting_students[course_id]]
 
+        groups_by_class_type = defaultdict(list)
+        for g in course_groups:
+            groups_by_class_type[g['type_name']].append(g)
+
+        has_deficit = any(
+            sum(g['queued'] for g in same_type_groups) >
+            (sum(g['limit'] for g in same_type_groups) - sum(g['enrolled'] for g in same_type_groups))
+            for same_type_groups in groups_by_class_type.values())
+
         courses_list.append({
             'id': course_id,
             'course_name': courses[course_id][0].course.name,
             'groups': course_groups,
             'waiting_students': waiting_by_class_type,
-            'max_of_waiting_students': max([s['number'] for s in waiting_by_class_type], default=0)
+            'max_of_waiting_students': max([s['number'] for s in waiting_by_class_type], default=0),
+            'total_waiting': sum(group.queued for group in courses[course_id]),
+            'total_guaranteed': sum(
+                gs.limit
+                for group in courses[course_id]
+                for gs in group.guaranteed_spots.all()
+            ),
+            'is_math': courses[course_id][0].course.course_type.short_name == 'MAT',
+            'has_deficit': has_deficit,
+            'smallest_group': min((group.enrolled for group in courses[course_id]), default=0)
         })
 
     return render(request, 'statistics/groups_list.html', {

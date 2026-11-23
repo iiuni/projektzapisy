@@ -12,7 +12,7 @@ import { mapGetters } from "vuex";
 
 import { CourseInfo } from "../../../../enrollment/timetable/assets/store/courses";
 
-interface ProposalInfo extends CourseInfo {
+export interface ProposalInfo extends CourseInfo {
   status: "IN_OFFER" | "IN_VOTE" | "WITHDRAWN";
   isOwnerActive: false | true;
 }
