@@ -1,8 +1,25 @@
+@import "~bootstrap/scss/bootstrap";
+
 #calendar {
   th {
     font-weight: normal;
   }
   a {
     color: var(--bs-dark);
+  }
+  .free-day,
+  .changed-day {
+    background-clip: padding-box;
+    .fc-col-header-cell-cushion,
+    .fc-daygrid-day-number {
+      text-decoration: underline;
+      text-decoration-style: dotted;
+    }
+  }
+  .free-day {
+    background-color: $gray-300;
+  }
+  .changed-day {
+    background-color: $yellow-200;
   }
 }

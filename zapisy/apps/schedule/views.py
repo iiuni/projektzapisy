@@ -8,14 +8,14 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, JsonResponse, HttpResponseBadRequest, HttpResponseServerError
 from django.shortcuts import redirect, render
 from django.template.response import TemplateResponse
 from django.urls import reverse
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 
 from apps.enrollment.courses.models.classroom import Classroom
-from apps.enrollment.courses.models.semester import Semester
+from apps.enrollment.courses.models.semester import Semester, Freeday, ChangedDay
 from apps.enrollment.courses.models.term import Term as CourseTerm
 from apps.schedule.filters import EventFilter, ExamFilter
 from apps.schedule.forms import (ConflictsForm, DecisionForm, EventForm, EventMessageForm,
@@ -336,6 +336,37 @@ class EventsTermsAjaxView(FullCalendarView):
         queryset = super(EventsTermsAjaxView, self).get_queryset()
         queryset = queryset.filter(event__type='2', event__visible=True)
         return queryset
+
+
+@require_GET
+def special_days(request, day_type):
+    """Returns list of special days between 'start' and 'end' dates based on day_type.
+
+    Both dates have to be given in 'input_date_format'.
+    Dates are returned from databse in 'output_date_format'.
+    Returns Freedays objects if day_type == 'freedays'
+    Returns ChangedDay objects if day_type == 'changeddays'
+    Responds with 400 if one or both params are missing.
+    Responds with 500 if unknown 'day_type' is set.
+    """
+    try:
+        start = request.GET['start']
+        end = request.GET['end']
+    except KeyError:
+        return HttpResponseBadRequest("Params are missing")
+    input_date_format = "%Y-%m-%dT%H:%M:%S.000Z"
+    output_date_format = "%Y-%m-%d"
+    start = datetime.datetime.strptime(start, input_date_format)
+    end = datetime.datetime.strptime(end, input_date_format)
+    formatted_start = start.strftime(output_date_format)
+    formatted_end = end.strftime(output_date_format)
+    if day_type == 'changeddays':
+        response = ChangedDay.objects.filter(day__gte=formatted_start, day__lte=formatted_end).values()
+    elif day_type == 'freedays':
+        response = Freeday.objects.filter(day__gte=formatted_start, day__lte=formatted_end).values()
+    else:
+        return HttpResponseServerError("Unknown 'day_type' value")
+    return JsonResponse(list(response), safe=False)
 
 
 @login_required
