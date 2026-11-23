@@ -16,9 +16,12 @@
             <tr>
                 <th>Prowadzący</th>
                 <th scope="col">Termin zajęć</th>
-                <th title="Maksymalna liczba osób, które mogą zapisać się na przedmiot" scope="col">Limit</th>
-                <th title="Liczba aktualnie zapisanych osób" scope="col">Zapisani</th>
-                <th title="Liczba osób oczekujących na zapis" scope="col">Kolejka</th>
+                <th data-bs-toggle="tooltip"
+                title="Maksymalna liczba osób, które mogą zapisać się na przedmiot" scope="col">Limit</th>
+                <th data-bs-toggle="tooltip"
+                title="Liczba aktualnie zapisanych osób" scope="col">Zapisani</th>
+                <th data-bs-toggle="tooltip"
+                title="Liczba osób oczekujących na zapis" scope="col">Kolejka</th>
                 {% if course.is_enrollment_on %}
                     <th scope="col"></th>
                     <th scope="col">Priorytet</th>
@@ -31,7 +34,7 @@
         </thead>
         <tbody>
             {% for group in class_groups %}
-                <tr {% if group.is_enrolled %} class="table-active" title="Jesteś zapisany/a do tej grupy" {% endif %}>
+                <tr {% if group.is_enrolled %} class="table-active" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-fallback-placements=["right","bottom","left","top"] title="Jesteś zapisany/a do tej grupy" {% endif %}>
                     <td >
                         {% if group.teacher %}
                             <a href="{% url 'employee-profile' group.teacher.user.id %}" class="person">
@@ -53,13 +56,17 @@
                     <td
                         {% if group.auto_enrollment %}
                         class="text-muted"
+                        data-bs-toggle="tooltip"
                         title="W grupach z auto-zapisem limit nie ma wpływu na logikę zapisów."
                         {% endif %}
                     >
                         {{ group.limit }}
                         {% for gs in group.guaranteed_spots.all %}
                             + 
-                            <abbr title="Miejsca gwarantowane dla grupy {{gs.role.name}}.">
+                            <abbr
+                            data-bs-toggle="tooltip"
+                            title="Miejsca gwarantowane dla grupy {{gs.role.name}}."
+                            >
                                 {{ gs.limit }}
                             </abbr>
                         {% endfor %}
