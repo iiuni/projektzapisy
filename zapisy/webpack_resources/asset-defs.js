@@ -41,6 +41,10 @@ const AssetDefs = {
 
   "poll-bokeh-plotting": [path.resolve("apps/grade/poll/assets/bokeh.js")],
 
+  "poll-grade-poll-list": [
+    path.resolve("apps/grade/poll/assets/grade-poll-list.js"),
+  ],
+
   // Ticket_create app
 
   "ticket_create-katex": [
