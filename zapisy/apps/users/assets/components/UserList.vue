@@ -1,7 +1,9 @@
 <template>
-  <ul>
-    <li v-for="user in matchedUsers" :key="user.id" class="mb-1">
-      <a :href="userLinkUrl + user.id"
+  <ul class="nav d-block">
+    <li v-for="user in matchedUsers" :key="user.id">
+      <a
+        :href="userLinkUrl + user.id"
+        class="d-block px-4 py-1 text-decoration-none"
         >{{ user.first_name }} {{ user.last_name }}</a
       >
     </li>
