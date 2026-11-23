@@ -203,7 +203,14 @@ def create_assignments_sheet(request):
     }
 
     # update Assignments sheet
-    suggested_groups = suggest_teachers(new_picks, proposals)
+    try:
+        suggested_groups = suggest_teachers(new_picks, proposals)
+    except KeyError as error:
+        messages.error(
+            request, f"""<p>
+            Nieznane ID propozycji przedmiotu. Nie wprowadzono zmian w arkuszach.</p>
+            {error}""")
+        return redirect(reverse('assignments-wizard'))
     all_groups = list(flatten(current_assignments.values())) + suggested_groups
     suggested_groups = sorted(all_groups, key=attrgetter('semester', 'name', 'group_type'))
     update_assignments_sheet(assignments_sheet, suggested_groups)
