@@ -1,0 +1,67 @@
+# First create the semester.
+- model: courses.Semester
+  pk: 1
+  fields:
+    year: 2023/24
+    type: z
+    records_opening: 2023-10-02T00:00:00+02:00
+    records_closing: 2023-10-14T23:59:59+02:00
+    records_ects_limit_abolition: 2023-10-09T23:59:00+02:00
+    semester_beginning: 2023-10-01T00:00:00+02:00
+    semester_ending: 2024-02-23T23:59:59+01:00
+
+# We will have five students.
+- model: auth.User
+  pk: 1
+  fields:
+    username: bolek
+- model: users.Student
+  pk: 1
+  fields:
+    user_id: 1
+    matricula: 100001
+    ects: 100
+
+- model: auth.User
+  pk: 2
+  fields:
+    username: lolek
+- model: users.Student
+  pk: 2
+  fields:
+    user_id: 2
+    matricula: 100002
+    ects: 100
+
+- model: auth.User
+  pk: 3
+  fields:
+    username: tosia
+- model: users.Student
+  pk: 3
+  fields:
+    user_id: 3
+    matricula: 100003
+    ects: 23
+
+- model: auth.User
+  pk: 4
+  fields:
+    username: zosia
+- model: users.Student
+  pk: 4
+  fields:
+    user_id: 4
+    matricula: 100004
+    ects: 130
+
+- model: auth.User
+  pk: 5
+  fields:
+    username: marek
+- model: users.Student
+  pk: 5
+  fields:
+    user_id: 5
+    matricula: 100005
+    ects: 173
