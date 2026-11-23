@@ -21,6 +21,14 @@ class NotificationPreferencesStudent(models.Model):
         "Decyzja w sprawie zgłoszonego przez Ciebie wydarzenia", default=True)
 
     @property
+    def discharge_approved_student(self):
+        return True
+
+    @property
+    def discharge_rejected_student(self):
+        return True
+
+    @property
     def news_has_been_added_high_priority(self):
         """High-priority news is sent to all active students."""
         return self.user.student.is_active
@@ -43,6 +51,10 @@ class NotificationPreferencesTeacher(models.Model):
         "Powiadomienie o głosowaniu (dotyczy członka Komisji Prac Dyplomowych)", default=True)
     event_decision = models.BooleanField(
         "Decyzja w sprawie zgłoszonego przez Ciebie wydarzenia", default=True)
+
+    @property
+    def discharge_approved_teacher(self):
+        return True
 
     @property
     def news_has_been_added_high_priority(self):

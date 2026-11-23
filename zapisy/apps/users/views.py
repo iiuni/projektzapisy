@@ -13,6 +13,7 @@ from apps.enrollment.records.models import GroupOpeningTimes, Record, RecordStat
 from apps.effects.models import CompletedCourses
 from apps.enrollment.timetable.views import build_group_list
 from apps.grade.ticket_create.models.student_graded import StudentGraded
+from apps.enrollment.discharges.models import DirectorDischarge
 from apps.notifications.views import create_form
 from apps.users.decorators import employee_required, external_contractor_forbidden
 
@@ -201,8 +202,17 @@ def my_profile(request):
     if semester and request.user.student:
         student: Student = request.user.student
         done_effects = CompletedCourses.get_completed_effects(student)
+
+        discharge_used = DirectorDischarge.get_used_total(student)
+        all_discharges = DirectorDischarge.objects.filter(
+            student=student,
+        ).select_related('course', 'course__semester')
+
         data.update({
             'effects': done_effects,
+            'discharge_used': discharge_used,
+            'discharge_limit': student.discharge_limit,
+            'all_discharges': all_discharges,
         })
         groups_opening_times = GroupOpeningTimes.objects.filter(
             student_id=student.pk, group__course__semester_id=semester.pk).select_related(
