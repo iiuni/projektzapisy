@@ -1,7 +1,6 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import $ from "jquery";
 import { TermDisplay } from "../terms";
 
 const ClassroomFieldProps = Vue.extend({
@@ -27,19 +26,11 @@ const ClassroomFieldProps = Vue.extend({
 
 @Component
 export default class ClassroomField extends ClassroomFieldProps {
-  // When changing location using widget we have to change values of room and place
-  // fields of currently edited term. We do it using JQuery.
   onClick() {
-    $(".active-term").find(".form-room").val(this.id);
-    $(".active-term")
-      .find(".form-place")
-      .val("Sala " + this.label);
-    $([document.documentElement, document.body]).animate(
-      {
-        scrollTop: $("#term-forms").offset()!.top,
-      },
-      500
-    );
+    this.$emit("select-room", {
+      roomId: this.id,
+      label: this.label,
+    });
   }
 }
 </script>
