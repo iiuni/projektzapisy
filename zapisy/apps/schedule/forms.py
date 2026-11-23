@@ -99,14 +99,58 @@ class CustomVisibleCheckbox(Field):
     template = 'forms/custom_visible_checkbox.html'
 
 
+# PretendRequired classes are designed to bypass the execution of the Field.validate method which
+# raises an exception if a required field is empty. This ensures that the field appears as
+# required to the user, but the default validation checks are omitted. We perform our own
+# validation inside the Event.clean method, which requires fields not to be empty only if certain
+# conditions are met.
+# For details on the CharField.validate and ModelChoiceField.validate methods, refer to:
+# https://github.com/django/django/blob/6726d750979a7c29e0dd866b4ea367eef7c8a420/django/forms/fields.py#L134
+# https://github.com/django/django/blob/6726d750979a7c29e0dd866b4ea367eef7c8a420/django/forms/models.py#L977
+class PretendRequiredCharField(forms.CharField):
+    def __init__(self, *args, **kwargs):
+        if not kwargs.get('required', True):
+            raise ValueError("The 'required' argument cannot be set to False")
+        super().__init__(*args, **kwargs)
+
+    def validate(self, value):
+        pass
+
+
+class PretendRequiredModelChoiceField(forms.ModelChoiceField):
+    def __init__(self, *args, **kwargs):
+        if not kwargs.get('required', True):
+            raise ValueError("The 'required' argument cannot be set to False")
+        super().__init__(*args, **kwargs)
+
+    def validate(self, value):
+        pass
+
+
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
         exclude = ('status', 'author', 'created', 'edited', 'group', 'interested')
 
-    title = forms.CharField(label="Nazwa", required=False)
+    def clean(self):
+        cleaned_data = super().clean()
+
+        if cleaned_data['type'] not in (Event.TYPE_EXAM, Event.TYPE_TEST):
+            cleaned_data['course'] = None
+        if cleaned_data['type'] != Event.TYPE_GENERIC:
+            cleaned_data['title'] = None
+
+        if cleaned_data['type'] == Event.TYPE_GENERIC and cleaned_data['title'] == '':
+            raise forms.ValidationError("Tytuł wydarzenia nie może być pusty")
+        elif cleaned_data['type'] != Event.TYPE_GENERIC and cleaned_data['course'] is None:
+            raise forms.ValidationError("Wybierz przedmiot, którego dotyczy wydarzenie")
+        else:
+            return cleaned_data
+
+    title = PretendRequiredCharField(label="Nazwa")
     description = forms.CharField(
         label="Opis",
+        required=False,
         help_text="Opis wydarzenia widoczny jest dla wszystkich, jeśli wydarzenie jest publiczne;"
         " widoczny tylko dla rezerwującego i administratora sal, gdy wydarzenie jest prywatne.",
         widget=forms.Textarea)
@@ -117,11 +161,11 @@ class EventForm(forms.ModelForm):
         label="Wydarzenie widoczne dla wszystkich użytkowników systemu",
         widget=forms.CheckboxInput(attrs={'class': ""}),
         required=False,
+        initial=True,
         help_text="Wydarzenia niepubliczne widoczne są jedynie dla autorów i osób z uprawnieniami moderatora."
     )
-    course = forms.ModelChoiceField(queryset=CourseInstance.objects.none(),
-                                    label="Przedmiot",
-                                    required=False)
+    course = PretendRequiredModelChoiceField(queryset=CourseInstance.objects.none(),
+                                             label="Przedmiot")
 
     def __init__(self, user, *args, **kwargs):
         super(EventForm, self).__init__(*args, **kwargs)
