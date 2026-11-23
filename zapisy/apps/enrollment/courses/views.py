@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
 from apps.enrollment.courses.models.course_instance import CourseInstance
+from apps.enrollment.records.models.opening_times import GroupOpeningTimes
 from apps.enrollment.courses.models.group import Group, GuaranteedSpots
 from apps.enrollment.courses.models.semester import Semester
 from apps.enrollment.records.models import Record, RecordStatus
@@ -103,7 +104,9 @@ def course_view_data(request, slug) -> Tuple[Optional[CourseInstance], Optional[
 
     teachers = {g.teacher for g in groups}
 
-    course.is_enrollment_on = any(g.can_enqueue for g in groups)
+    course.can_enqueue_any = any(g.can_enqueue for g in groups)
+    times = GroupOpeningTimes.are_groups_open_for_student(student, groups)
+    course.is_enrollment_on = any(list(times.values()))
 
     waiting_students = {}
     if request.user.employee:
@@ -126,7 +129,7 @@ def course_view(request, slug):
     return render(request, 'courses/courses.html', data)
 
 
-def get_group_data(group_ids: List[int], user: User, status: RecordStatus) -> Dict[int, GroupData]:
+def get_group_data(group_ids: List[int], user: User, status: List[RecordStatus]) -> Dict[int, GroupData]:
     """Retrieves a group and relevant data for each group id of group_ids list.
 
     If the group does not exist skip it. If no group exists return an empty dictionary.
@@ -146,7 +149,7 @@ def get_group_data(group_ids: List[int], user: User, status: RecordStatus) -> Di
             raise Http404
 
         records = (
-            Record.objects.filter(group_id=group_id, status=status)
+            Record.objects.filter(group_id=group_id, status__in=status)
             .select_related(
                 'student', 'student__user', 'student__program', 'student__consent'
             )
@@ -203,8 +206,8 @@ def get_students_from_data(
 @login_required
 def course_list_view(request, course_slug: str, class_type: int = None):
     course, _, groups_ids = get_all_group_ids_for_course_slug(course_slug, class_type=class_type)
-    groups_data_enrolled = get_group_data(groups_ids, request.user, status=RecordStatus.ENROLLED)
-    groups_data_queued = get_group_data(groups_ids, request.user, status=RecordStatus.QUEUED)
+    groups_data_enrolled = get_group_data(groups_ids, request.user, status=[RecordStatus.ENROLLED])
+    groups_data_queued = get_group_data(groups_ids, request.user, status=[RecordStatus.QUEUED, RecordStatus.BLOCKED])
 
     students_in_course, students_in_queue = get_students_from_data(
         groups_data_enrolled, groups_data_queued
@@ -249,8 +252,8 @@ def group_view(request, group_id):
 
     Presents list of all students enrolled and enqueued to group.
     """
-    enrolled_data = get_group_data([group_id], request.user, status=RecordStatus.ENROLLED)
-    queued_data = get_group_data([group_id], request.user, status=RecordStatus.QUEUED)
+    enrolled_data = get_group_data([group_id], request.user, status=[RecordStatus.ENROLLED])
+    queued_data = get_group_data([group_id], request.user, [RecordStatus.QUEUED, RecordStatus.BLOCKED])
     students_in_group, students_in_queue = get_students_from_data(
         enrolled_data, queued_data, preserve_queue_ordering=True
     )
@@ -273,7 +276,7 @@ def group_view(request, group_id):
 
 def recorded_students_csv(
     group_ids: List[int],
-    status: RecordStatus,
+    status: List[RecordStatus],
     user: User,
     course_name: Optional[str] = None,
     exclude_students: Optional[Iterable] = None,
@@ -314,7 +317,7 @@ def group_enrolled_csv(request, group_id):
     """Prints out the group members in csv format."""
     if not Group.objects.filter(id=group_id).exists():
         raise Http404
-    return recorded_students_csv([group_id], RecordStatus.ENROLLED, request.user)
+    return recorded_students_csv([group_id], [RecordStatus.ENROLLED], request.user)
 
 
 @employee_required
@@ -322,7 +325,8 @@ def group_queue_csv(request, group_id):
     """Prints out the group queue in csv format."""
     if not Group.objects.filter(id=group_id).exists():
         raise Http404
-    return recorded_students_csv([group_id], RecordStatus.QUEUED, request.user, preserve_ordering=True)
+    return recorded_students_csv([group_id], [RecordStatus.QUEUED, RecordStatus.BLOCKED],
+                                 request.user, preserve_ordering=True)
 
 
 def get_all_group_ids_for_course_slug(slug, class_type: int = None):
@@ -349,7 +353,7 @@ def course_enrolled_csv(request, course_slug):
     for group_id in group_ids:
         if not Group.objects.filter(id=group_id).exists():
             raise Http404
-    return recorded_students_csv(group_ids, RecordStatus.ENROLLED, request.user, course_short_name)
+    return recorded_students_csv(group_ids, [RecordStatus.ENROLLED], request.user, course_short_name)
 
 
 @employee_required
@@ -359,7 +363,7 @@ def course_queue_csv(request, course_slug):
     for group_id in group_ids:
         if not Group.objects.filter(id=group_id).exists():
             raise Http404
-    group_data = get_group_data(group_ids, request.user, status=RecordStatus.ENROLLED)
+    group_data = get_group_data(group_ids, request.user, status=[RecordStatus.ENROLLED])
 
     students_enrolled = set()
     for group in group_data.values():
@@ -367,7 +371,7 @@ def course_queue_csv(request, course_slug):
 
     return recorded_students_csv(
         group_ids,
-        RecordStatus.QUEUED,
+        [RecordStatus.QUEUED, RecordStatus.BLOCKED],
         request.user,
         course_short_name,
         exclude_students=students_enrolled

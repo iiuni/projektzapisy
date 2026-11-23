@@ -165,7 +165,7 @@ def my_prototype(request):
     for record in records:
         group = all_groups_by_id.get(record.group_id)
         group.is_enrolled = record.status == RecordStatus.ENROLLED
-        group.is_enqueued = record.status == RecordStatus.QUEUED
+        group.is_enqueued = record.status in [RecordStatus.QUEUED, RecordStatus.BLOCKED]
 
     for pin in pinned:
         group = all_groups_by_id.get(pin.pk)
@@ -261,12 +261,12 @@ def prototype_update_groups(request):
         filter=(Q(record__status=RecordStatus.ENROLLED, record__student_id=student.pk)))
     is_enqueued = Count(
         'record',
-        filter=(Q(record__status=RecordStatus.QUEUED, record__student_id=student.pk)))
+        filter=(Q(record__status__in=[RecordStatus.QUEUED, RecordStatus.BLOCKED], record__student_id=student.pk)))
 
     groups_from_ids = Group.objects.filter(pk__in=ids)
     groups_enrolled_or_enqueued = Group.objects.filter(
         course__semester=semester,
-        record__status__in=[RecordStatus.QUEUED, RecordStatus.ENROLLED],
+        record__status__in=[RecordStatus.QUEUED, RecordStatus.BLOCKED, RecordStatus.ENROLLED],
         record__student=student)
     groups_all = groups_from_ids | groups_enrolled_or_enqueued
     groups = groups_all.annotate(num_enrolled=num_enrolled).annotate(
