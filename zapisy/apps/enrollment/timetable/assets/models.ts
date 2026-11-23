@@ -153,6 +153,7 @@ export class Group {
 
   public isEnrolled = false;
   public isEnqueued = false;
+  public isFull = false;
   public isPinned = false;
   public isSelected = false;
   public canEnqueue = false;
@@ -179,6 +180,7 @@ export class Group {
 
     this.isEnrolled = json.is_enrolled || false;
     this.isEnqueued = json.is_enqueued || false;
+    this.isFull = json.limit <= json.num_enrolled || false;
     this.isPinned = json.is_pinned || false;
     this.canEnqueue = json.can_enqueue || false;
     this.canDequeue = json.can_dequeue || false;
