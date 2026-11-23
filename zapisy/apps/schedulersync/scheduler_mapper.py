@@ -152,16 +152,25 @@ class SchedulerMapper:
                                     "the course proposal in the database.\n"
                                     "Type 'None' to mark the course to be ignored.".format(error, name))
 
-        def get_course(proposal: 'Proposal') -> 'CourseInstance':
+        def get_course(proposal: 'Proposal', interactive: bool = True) -> 'CourseInstance':
             """Return CourseInstance object from SZ database."""
             course = None
             try:
                 course = CourseInstance.objects.get(semester=self.semester, offer=proposal)
                 self.summary.used_courses += 1
             except CourseInstance.DoesNotExist:
-                course = CourseInstance.create_proposal_instance(proposal, self.semester)
-                self.summary.created_courses += 1
-                print(f"+ Course instance '{proposal.name}' created")
+                existing_course = CourseInstance.objects.filter(semester=self.semester, name=proposal.name)
+                if not existing_course:
+                    course = CourseInstance.create_proposal_instance(proposal, self.semester)
+                    self.summary.created_courses += 1
+                    print(f"+ Course instance '{proposal.name}' created")
+                elif interactive:
+                    existing_proposal = existing_course.get()
+                    print(
+                        f"Course '{proposal.name}' has created CourseInstance object for proposal with id: "
+                        f"{existing_proposal.id}. Skiping create new CourseInsatnce object for proposal. "
+                        "Please fix it."
+                    )
             return course
 
         mapped_courses = {}
@@ -170,7 +179,7 @@ class SchedulerMapper:
             if proposal is None:
                 mapped_courses[course] = None
             else:
-                mapped_courses[course] = get_course(proposal)
+                mapped_courses[course] = get_course(proposal, self.interactive_flag)
         return mapped_courses
 
     def _map_classrooms(self, rooms: Iterable[str]) -> Dict[str, Classroom]:
