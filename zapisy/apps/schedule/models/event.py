@@ -93,7 +93,7 @@ class Event(models.Model):
 
             # students can only add generic events that have to be accepted first
 
-            if self.author.student and not self.author.has_perm(
+            if not self.author.employee and not self.author.has_perm(
                     'schedule.manage_events'):
                 if self.type != Event.TYPE_GENERIC:
                     raise ValidationError(
