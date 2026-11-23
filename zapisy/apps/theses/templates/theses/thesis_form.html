@@ -43,6 +43,7 @@
     {% endif %}
 
     <form method="POST" id="confirm-submit" class="post-form">
+        <input type="hidden" id="id_selected_students" name="selected_students" value="">
         {% csrf_token %}
         {% crispy thesis_form %}
     </form>
@@ -51,4 +52,11 @@
         {% render_bundle 'theses-theses-change' %} 
     {% endif %}
 </div>
+
+<script>
+    const ajaxUrl = '{% url "theses:get_data" %}';
+    const csrfToken = '{{ csrf_token }}';
+</script>
+{% render_bundle 'theses-theses-filter-students' %}
+
 {% endblock %}

@@ -1,11 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 from django.forms.models import model_to_dict
+from django.db.models import Q
 
 from apps.theses.enums import ThesisStatus, ThesisVote
 from apps.theses.forms import EditThesisForm, RejecterForm, RemarkForm, ThesisForm, VoteForm
@@ -203,6 +204,25 @@ def edit_thesis(request, id):
         'confirm_changes': confirm_changes,
         'old_instance': thesis_dict
     })
+
+
+def get_data(request):
+    if request.method == 'GET':
+        input_value = request.GET.get('input_value', '')
+        filtered = Student.objects.filter(
+            Q(matricula__icontains=input_value) |
+            Q(user__first_name__icontains=input_value) |
+            Q(user__last_name__icontains=input_value)
+        )
+        students = [
+            {
+                'id': student.pk,
+                'name': student.user.get_full_name(),
+                'matricula': student.matricula
+            }
+            for student in filtered
+        ]
+        return JsonResponse({'filtered_students': students})
 
 
 @employee_required
